@@ -1,0 +1,20 @@
+#!/usr/bin/env python2.7
+#
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
+import click
+import nlgeval
+
+
+@click.command()
+@click.option('--references', type=click.Path(exists=True), multiple=True, required=True, help='Path of the reference file. This option can be provided multiple times for multiple reference files.')
+@click.option('--hypothesis', type=click.Path(exists=True), required=True, help='Path of the hypothesis file.')
+@click.option('--no-overlap', is_flag=True, help='Flag. If provided, word overlap based metrics will not be computed.')
+@click.option('--no-skipthoughts', is_flag=True, help='Flag. If provided, skip-thought cosine similarity will not be computed.')
+@click.option('--no-glove', is_flag=True, help='Flag. If provided, other word embedding based metrics will not be computed.')
+def compute_metrics(hypothesis, references, no_overlap, no_skipthoughts, no_glove):
+    nlgeval.compute_metrics(hypothesis, references, no_overlap, no_skipthoughts, no_glove)
+
+
+if __name__ == '__main__':
+    compute_metrics()
