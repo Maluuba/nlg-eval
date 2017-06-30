@@ -67,15 +67,15 @@ If you use this code as part of any published research, please cite the followin
 
 Shikhar Sharma, Layla El Asri, Hannes Schulz, and Jeremie Zumer.
 **"Relevance of Unsupervised Metrics in Task-Oriented Dialogue for Evaluating Natural Language Generation"**
-*arXiv preprint arXiv:xxxx.xxxxx* (2017)
+*arXiv preprint arXiv:1706.09799* (2017)
 
     @article{sharma2017nlgeval,
       author  = {Sharma, Shikhar and El Asri, Layla and Schulz, Hannes and Zumer, Jeremie},
       title   = {Relevance of Unsupervised Metrics in Task-Oriented Dialogue for Evaluating Natural Language Generation},
       journal = {CoRR},
-      volume  = {abs/xxxx.xxxxx},
+      volume  = {abs/1706.09799},
       year    = {2017},
-      url     = {http://arxiv.org/abs/xxxx.xxxxx}
+      url     = {http://arxiv.org/abs/1706.09799}
     }
 
 ## Example ##
