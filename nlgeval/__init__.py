@@ -69,10 +69,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
     return ret_scores
 
 
-def compute_individual_metrics(ref, hyp):
-    no_overlap = False
-    no_skipthoughts = False
-    no_glove = False
+def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False, no_glove=False):
     assert isinstance(ref, str)
     assert isinstance(hyp, str)
 
