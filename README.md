@@ -58,7 +58,7 @@ corresponding hypothesis.
     from nlgeval import compute_individual_metrics
     metrics_dict = compute_individual_metrics(references, hypothesis)
 
-where `references` is a list of ground truth reference text strings,
+where `references` is a list of ground truth reference text strings and
 `hypothesis` is the hypothesis text string.
 
 ## Reference ##
