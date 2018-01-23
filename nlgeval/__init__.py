@@ -73,7 +73,8 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
     assert isinstance(ref, str)
     assert isinstance(hyp, str)
 
-    ref = ref.split('||<|>||')  # special delimiter
+    if isinstance(ref, str):
+        ref = ref.split('||<|>||')  # special delimiter
     ref = [a.strip() for a in ref]
     refs = {0: ref}
     ref_list = [ref]
