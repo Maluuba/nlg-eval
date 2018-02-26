@@ -28,11 +28,12 @@ class Embedding(object):
             return self.unk
 
 
-def eval_emb_metrics(hypothesis, references):
+def eval_emb_metrics(hypothesis, references, emb=None):
     from sklearn.metrics.pairwise import cosine_similarity
     from nltk.tokenize import word_tokenize
     import numpy as np
-    emb = Embedding()
+    if emb is None:
+        emb = Embedding()
 
     emb_hyps = []
     avg_emb_hyps = []

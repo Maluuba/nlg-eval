@@ -47,19 +47,26 @@ where each line in the hypothesis file is a generated sentence and the correspon
 lines across the reference files are ground truth reference sentences for the
 corresponding hypothesis.
 
-### Within a script: for the entire corpus ###
+### functional API: for the entire corpus ###
 
     from nlgeval import compute_metrics
     metrics_dict = compute_metrics(hypothesis='examples/hyp.txt',
                                    references=['examples/ref1.txt', 'examples/ref2.txt'])
 
-### Within a script: for only one sentence ###
+### functional API: for only one sentence ###
 
     from nlgeval import compute_individual_metrics
     metrics_dict = compute_individual_metrics(references, hypothesis)
 
 where `references` is a list of ground truth reference text strings and
 `hypothesis` is the hypothesis text string.
+
+### object oriented API for repeated calls in a script ###
+
+    from nlgeval import NLGEval
+    nlgeval = NLGEval()
+    metrics_dict = nlgeval.evaluate(references, hypothesis)
+
 
 ## Reference ##
 If you use this code as part of any published research, please cite the following paper:
