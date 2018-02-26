@@ -64,7 +64,7 @@ where `references` is a list of ground truth reference text strings and
 ### object oriented API for repeated calls in a script ###
 
     from nlgeval import NLGEval
-    nlgeval = NLGEval()
+    nlgeval = NLGEval()  # loads the models
     metrics_dict = nlgeval.evaluate(references, hypothesis)
 
 

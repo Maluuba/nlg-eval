@@ -10,5 +10,4 @@ def test_oo_api():
 
     nlge = NLGEval()
     res = nlge.evaluate(ref1, hyp[0])
-    import ipdb; ipdb.set_trace();
     res = nlge.evaluate(ref2, hyp[1])
