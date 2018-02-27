@@ -126,3 +126,84 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
             ret_scores[name] = value
 
     return ret_scores
+
+
+class NLGEval:
+    def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False):
+        self.no_overlap = no_overlap
+        if not no_overlap:
+            self.load_scorers()
+
+        self.no_skipthoughts = no_skipthoughts
+        if not self.no_skipthoughts:
+            self.load_skipthought_model()
+
+        self.no_glove = no_glove
+        if not self.no_glove:
+            self.load_glove()
+
+    def load_scorers(self):
+        self.scorers = [
+            (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
+            (Meteor(), "METEOR"),
+            (Rouge(), "ROUGE_L"),
+            (Cider(), "CIDEr")
+        ]
+
+    def load_skipthought_model(self):
+        from nlgeval.skipthoughts import skipthoughts
+        import numpy as np
+        from sklearn.metrics.pairwise import cosine_similarity
+        self.np = np
+        self.cosine_similarity = cosine_similarity
+
+        model = skipthoughts.load_model()
+        self.skipthought_encoder = skipthoughts.Encoder(model)
+
+    def load_glove(self):
+        from nlgeval.word2vec.evaluate import Embedding
+        from nlgeval.word2vec.evaluate import eval_emb_metrics
+        import numpy as np
+        self.eval_emb_metrics = eval_emb_metrics
+        self.np = np
+        self.glove_emb = Embedding()
+
+    def evaluate(self, ref, hyp):
+        assert isinstance(hyp, str)
+        ref = [a.strip() for a in ref]
+        refs = {0: ref}
+        ref_list = [ref]
+
+        hyps = {0: [hyp.strip()]}
+        hyp_list = [hyp]
+
+        ret_scores = {}
+        if not self.no_overlap:
+            for scorer, method in self.scorers:
+                score, scores = scorer.compute_score(refs, hyps)
+                if isinstance(method, list):
+                    for sc, scs, m in zip(score, scores, method):
+                        ret_scores[m] = sc
+                else:
+                    ret_scores[method] = score
+
+        if not self.no_skipthoughts:
+            vector_hyps = self.skipthought_encoder.encode([h.strip() for h in hyp_list], verbose=False)
+            ref_list_T = self.np.array(ref_list).T.tolist()
+            vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
+            cosine_similarity = map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs)
+            cosine_similarity = self.np.max(cosine_similarity, axis=0).mean()
+            ret_scores['SkipThoughtCS'] = cosine_similarity
+
+        if not self.no_glove:
+            glove_hyps = [h.strip() for h in hyp_list]
+            ref_list_T = self.np.array(ref_list).T.tolist()
+            glove_refs = map(lambda refl: [r.strip() for r in refl], ref_list_T)
+            scores = self.eval_emb_metrics(glove_hyps, glove_refs, emb=self.glove_emb)
+            scores = scores.split('\n')
+            for score in scores:
+                name, value = score.split(':')
+                value = float(value.strip())
+                ret_scores[name] = value
+
+        return ret_scores
