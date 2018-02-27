@@ -9,5 +9,5 @@ def test_oo_api():
         ref2 = f.readlines()
 
     nlge = NLGEval()
-    res = nlge.evaluate(ref1, hyp[0])
-    res = nlge.evaluate(ref2, hyp[1])
+    res = nlge.evaluate([ref1[0]] + [ref2[0]], hyp[0])
+    res = nlge.evaluate([ref1[1]] + [ref2[1]], hyp[1])

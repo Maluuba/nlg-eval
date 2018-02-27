@@ -67,6 +67,8 @@ where `references` is a list of ground truth reference text strings and
     nlgeval = NLGEval()  # loads the models
     metrics_dict = nlgeval.evaluate(references, hypothesis)
 
+where `references` is a list of ground truth reference text strings and
+`hypothesis` is the hypothesis text string.
 
 ## Reference ##
 If you use this code as part of any published research, please cite the following paper:
