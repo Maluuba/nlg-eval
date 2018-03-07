@@ -168,7 +168,7 @@ class NLGEval:
         self.np = np
         self.glove_emb = Embedding()
 
-    def evaluate_single(self, ref, hyp):
+    def compute_individual_metrics(self, ref, hyp):
         assert isinstance(hyp, str)
         ref = [a.strip() for a in ref]
         refs = {0: ref}
@@ -208,7 +208,7 @@ class NLGEval:
 
         return ret_scores
 
-    def evaluate_corpus(self, ref_list, hyp_list):
+    def compute_metrics(self, ref_list, hyp_list):
         ref_list = [map(str.strip, refs) for refs in zip(*ref_list)]
         refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
         hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
