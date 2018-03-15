@@ -61,14 +61,25 @@ corresponding hypothesis.
 where `references` is a list of ground truth reference text strings and
 `hypothesis` is the hypothesis text string.
 
-### object oriented API for repeated calls in a script ###
+### object oriented API for repeated calls in a script - single example ###
 
     from nlgeval import NLGEval
     nlgeval = NLGEval()  # loads the models
-    metrics_dict = nlgeval.evaluate(references, hypothesis)
+    metrics_dict = nlgeval.compute_individual_metrics(references, hypothesis)
 
 where `references` is a list of ground truth reference text strings and
 `hypothesis` is the hypothesis text string.
+
+### object oriented API for repeated calls in a script - multiple examples ###
+
+    from nlgeval import NLGEval
+    nlgeval = NLGEval()  # loads the models
+    metrics_dict = nlgeval.compute_metrics(references, hypothesis)
+
+where `references` is a list of lists of ground truth reference text strings and
+`hypothesis` is a list of hypothesis text strings. Each inner list in `references`
+is one set of references for the hypothesis (a list of single reference strings for
+each sentence in `hypothesis` in the same order).
 
 ## Reference ##
 If you use this code as part of any published research, please cite the following paper:

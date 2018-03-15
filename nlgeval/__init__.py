@@ -168,7 +168,7 @@ class NLGEval:
         self.np = np
         self.glove_emb = Embedding()
 
-    def evaluate(self, ref, hyp):
+    def compute_individual_metrics(self, ref, hyp):
         assert isinstance(hyp, str)
         ref = [a.strip() for a in ref]
         refs = {0: ref}
@@ -176,6 +176,43 @@ class NLGEval:
 
         hyps = {0: [hyp.strip()]}
         hyp_list = [hyp]
+
+        ret_scores = {}
+        if not self.no_overlap:
+            for scorer, method in self.scorers:
+                score, scores = scorer.compute_score(refs, hyps)
+                if isinstance(method, list):
+                    for sc, scs, m in zip(score, scores, method):
+                        ret_scores[m] = sc
+                else:
+                    ret_scores[method] = score
+
+        if not self.no_skipthoughts:
+            vector_hyps = self.skipthought_encoder.encode([h.strip() for h in hyp_list], verbose=False)
+            ref_list_T = self.np.array(ref_list).T.tolist()
+            vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
+            cosine_similarity = map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs)
+            cosine_similarity = self.np.max(cosine_similarity, axis=0).mean()
+            ret_scores['SkipThoughtCS'] = cosine_similarity
+
+        if not self.no_glove:
+            glove_hyps = [h.strip() for h in hyp_list]
+            ref_list_T = self.np.array(ref_list).T.tolist()
+            glove_refs = map(lambda refl: [r.strip() for r in refl], ref_list_T)
+            scores = self.eval_emb_metrics(glove_hyps, glove_refs, emb=self.glove_emb)
+            scores = scores.split('\n')
+            for score in scores:
+                name, value = score.split(':')
+                value = float(value.strip())
+                ret_scores[name] = value
+
+        return ret_scores
+
+    def compute_metrics(self, ref_list, hyp_list):
+        ref_list = [map(str.strip, refs) for refs in zip(*ref_list)]
+        refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
+        hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
+        assert len(refs) == len(hyps)
 
         ret_scores = {}
         if not self.no_overlap:
