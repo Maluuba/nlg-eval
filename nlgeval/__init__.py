@@ -1,10 +1,14 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 from __future__ import print_function
+
+from six.moves import map
+
 from nlgeval.pycocoevalcap.bleu.bleu import Bleu
+from nlgeval.pycocoevalcap.cider.cider import Cider
 from nlgeval.pycocoevalcap.meteor.meteor import Meteor
 from nlgeval.pycocoevalcap.rouge.rouge import Rouge
-from nlgeval.pycocoevalcap.cider.cider import Cider
+
 
 def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=False, no_glove=False):
     with open(hypothesis, 'r') as f:
@@ -13,7 +17,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
     for iidx, reference in enumerate(references):
         with open(reference, 'r') as f:
             ref_list.append(f.readlines())
-    ref_list = [map(str.strip, refs) for refs in zip(*ref_list)]
+    ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
     refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
     hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
     assert len(refs) == len(hyps)
@@ -46,7 +50,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         vector_hyps = encoder.encode([h.strip() for h in hyp_list], verbose=False)
         ref_list_T = np.array(ref_list).T.tolist()
         vector_refs = map(lambda refl: encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-        cosine_similarity = map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs)
+        cosine_similarity = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
         cosine_similarity = np.max(cosine_similarity, axis=0).mean()
         print("SkipThoughtsCosineSimilairty: %0.6f" % (cosine_similarity))
         ret_scores['SkipThoughtCS'] = cosine_similarity
@@ -107,7 +111,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
         vector_hyps = encoder.encode([h.strip() for h in hyp_list], verbose=False)
         ref_list_T = np.array(ref_list).T.tolist()
         vector_refs = map(lambda refl: encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-        cosine_similarity = map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs)
+        cosine_similarity = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
         cosine_similarity = np.max(cosine_similarity, axis=0).mean()
         ret_scores['SkipThoughtCS'] = cosine_similarity
 
@@ -128,7 +132,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
     return ret_scores
 
 
-class NLGEval:
+class NLGEval(object):
     def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False):
         self.no_overlap = no_overlap
         if not no_overlap:
@@ -191,7 +195,7 @@ class NLGEval:
             vector_hyps = self.skipthought_encoder.encode([h.strip() for h in hyp_list], verbose=False)
             ref_list_T = self.np.array(ref_list).T.tolist()
             vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-            cosine_similarity = map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs)
+            cosine_similarity = list(map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
             cosine_similarity = self.np.max(cosine_similarity, axis=0).mean()
             ret_scores['SkipThoughtCS'] = cosine_similarity
 
@@ -209,7 +213,7 @@ class NLGEval:
         return ret_scores
 
     def compute_metrics(self, ref_list, hyp_list):
-        ref_list = [map(str.strip, refs) for refs in zip(*ref_list)]
+        ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
         refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
         hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
         assert len(refs) == len(hyps)
@@ -228,7 +232,7 @@ class NLGEval:
             vector_hyps = self.skipthought_encoder.encode([h.strip() for h in hyp_list], verbose=False)
             ref_list_T = self.np.array(ref_list).T.tolist()
             vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-            cosine_similarity = map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs)
+            cosine_similarity = list(map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
             cosine_similarity = self.np.max(cosine_similarity, axis=0).mean()
             ret_scores['SkipThoughtCS'] = cosine_similarity
 

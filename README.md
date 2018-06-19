@@ -15,20 +15,24 @@ Rows across these files should correspond to the same example.
 
 ## Requirements ##
 Tested using
-
 - java 1.8.0
-- python 2.7
-  - click 6.3
-  - nltk 3.1
-  - numpy 1.11.0
-  - scikit-learn 0.17
-  - gensim 0.12.4
-  - Theano 0.8.1
-  - scipy 0.17.0
+- python 3.6
+  - click 6.7
+  - nltk 3.3
+  - numpy 1.14.5
+  - scikit-learn 0.19.1
+  - gensim 3.4.0
+  - Theano 1.0.2
+  - scipy 1.1.0
+  - six>=1.11
+
+Python 2.7 has also been tested with mostly the same dependencies but an older version of gensim. You can see the version requirements in [requirements_py2.txt](requirements_py2.txt)
 
 ## Setup ##
 
 For the initial one-time setup, make sure java 1.8.0 is installed. After that just run:
+    
+    pip install six
 
     # install the python dependencies
     pip install -e .
@@ -115,6 +119,8 @@ gives
     EmbeddingAverageCosineSimilairty: 0.884690
     VectorExtremaCosineSimilarity: 0.568696
     GreedyMatchingScore: 0.784205
+
+Examples of the Python API can be found in [test_nlgeval.py](nlgeval/tests/test_nlgeval.py),
 
 ## Important Note ##
 CIDEr by default (with idf parameter set to "corpus" mode) computes IDF values using the reference sentences provided. Thus,

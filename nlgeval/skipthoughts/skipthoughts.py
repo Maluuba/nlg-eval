@@ -1,19 +1,19 @@
 '''
 Skip-thought vectors
 '''
+import copy
 import os
+from collections import OrderedDict, defaultdict
 
+import nltk
+import numpy
+import six
 import theano
 import theano.tensor as tensor
-
-import cPickle as pkl
-import numpy
-import copy
-import nltk
-
-from collections import OrderedDict, defaultdict
-from scipy.linalg import norm
 from nltk.tokenize import word_tokenize
+from scipy.linalg import norm
+from six.moves import cPickle as pkl
+import logging
 
 profile = False
 
@@ -76,8 +76,8 @@ def load_tables():
     Load the tables
     """
     words = []
-    utable = numpy.load(os.path.join(path_to_tables, 'utable.npy'))
-    btable = numpy.load(os.path.join(path_to_tables, 'btable.npy'))
+    utable = numpy.load(os.path.join(path_to_tables, 'utable.npy'), encoding='bytes')
+    btable = numpy.load(os.path.join(path_to_tables, 'btable.npy'), encoding='bytes')
     f = open(os.path.join(path_to_tables, 'dictionary.txt'), 'rb')
     for line in f:
         words.append(line.decode('utf-8').strip())
@@ -125,8 +125,8 @@ def encode(model, X, use_norm=True, verbose=True, batch_size=128, use_eos=False)
     # Get features. This encodes by length, in order to avoid wasting computation
     for k in ds.keys():
         if verbose:
-            print k
-        numbatches = len(ds[k]) / batch_size + 1
+            print(k)
+        numbatches = int(len(ds[k]) / batch_size + 1)
         for minibatch in range(numbatches):
             caps = ds[k][minibatch::numbatches]
 
@@ -194,10 +194,10 @@ def nn(model, text, vectors, query, k=5):
     scores = numpy.dot(qf, vectors.T).flatten()
     sorted_args = numpy.argsort(scores)[::-1]
     sentences = [text[a] for a in sorted_args[:k]]
-    print 'QUERY: ' + query
-    print 'NEAREST: '
+    print('QUERY: ' + query)
+    print('NEAREST: ')
     for i, s in enumerate(sentences):
-        print s, sorted_args[i]
+        print(s, sorted_args[i])
 
 
 def word_features(table):
@@ -221,10 +221,10 @@ def nn_words(table, wordvecs, query, k=10):
     scores = numpy.dot(qf, wordvecs.T).flatten()
     sorted_args = numpy.argsort(scores)[::-1]
     words = [keys[a] for a in sorted_args[:k]]
-    print 'QUERY: ' + query
-    print 'NEAREST: '
+    print('QUERY: ' + query)
+    print('NEAREST: ')
     for i, w in enumerate(words):
-        print w
+        print(w)
 
 
 def _p(pp, name):
@@ -239,7 +239,7 @@ def init_tparams(params):
     initialize Theano shared variables according to the initial parameters
     """
     tparams = OrderedDict()
-    for kk, pp in params.iteritems():
+    for kk, pp in six.iteritems(params):
         tparams[kk] = theano.shared(params[kk], name=kk)
     return tparams
 
@@ -249,9 +249,9 @@ def load_params(path, params):
     load parameters
     """
     pp = numpy.load(path)
-    for kk, vv in params.iteritems():
+    for kk, vv in six.iteritems(params):
         if kk not in pp:
-            warnings.warn('%s is not in the archive'%kk)
+            logging.warning('%s is not in the archive', kk)
             continue
         params[kk] = pp[kk]
     return params
