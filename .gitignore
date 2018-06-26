@@ -1,15 +1,16 @@
 *.pyc
+
+*.npy
+
 pycocoevalcap/tokenizer/tmp*
 delete.py
 nlg_eval.egg-info/
 
 bi_skip.npz
 bi_skip.npz.pkl
-btable.npy
 dictionary.txt
 uni_skip.npz
 uni_skip.npz.pkl
-utable.npy
 
 glove.6B.300d.txt
 glove.6B.300d.model.bin
