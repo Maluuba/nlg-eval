@@ -34,19 +34,6 @@ then
     rm -f glove.6B.zip
 fi
 
-# skip-thoughts data
-download_file http://www.cs.toronto.edu/~rkiros/models/dictionary.txt nlgeval/data
-download_file http://www.cs.toronto.edu/~rkiros/models/utable.npy nlgeval/data
-download_file http://www.cs.toronto.edu/~rkiros/models/btable.npy nlgeval/data
-download_file http://www.cs.toronto.edu/~rkiros/models/uni_skip.npz nlgeval/data
-download_file http://www.cs.toronto.edu/~rkiros/models/uni_skip.npz.pkl nlgeval/data
-download_file http://www.cs.toronto.edu/~rkiros/models/bi_skip.npz nlgeval/data
-download_file http://www.cs.toronto.edu/~rkiros/models/bi_skip.npz.pkl nlgeval/data
-
-# multi-bleu.perl
-download_file https://raw.githubusercontent.com/moses-smt/mosesdecoder/b199e654df2a26ea58f234cbb642e89d9c1f269d/scripts/generic/multi-bleu.perl nlgeval/multibleu
-[ -e nlgeval/multibleu/multi-bleu.perl ] && chmod +x nlgeval/multibleu/multi-bleu.perl
-
 # GloVe word vectors
 if python --version 2>&1 | grep -P 'Python 2\.\d'; then
     TEST_PYTHON_VERSION="2"
@@ -66,4 +53,18 @@ if [ ! -f nlgeval/data/glove.6B.300d.model.bin ]
 then
     python -m nltk.downloader punkt
     PYTHONPATH=`pwd` python nlgeval/word2vec/generate_w2v_files.py
+    rm nlgeval/data/glove.6B.300d.txt nlgeval/data/glove.6B.300d.model.txt
 fi
+
+# skip-thoughts data
+download_file http://www.cs.toronto.edu/~rkiros/models/dictionary.txt nlgeval/data
+download_file http://www.cs.toronto.edu/~rkiros/models/utable.npy nlgeval/data
+download_file http://www.cs.toronto.edu/~rkiros/models/btable.npy nlgeval/data
+download_file http://www.cs.toronto.edu/~rkiros/models/uni_skip.npz nlgeval/data
+download_file http://www.cs.toronto.edu/~rkiros/models/uni_skip.npz.pkl nlgeval/data
+download_file http://www.cs.toronto.edu/~rkiros/models/bi_skip.npz nlgeval/data
+download_file http://www.cs.toronto.edu/~rkiros/models/bi_skip.npz.pkl nlgeval/data
+
+# multi-bleu.perl
+download_file https://raw.githubusercontent.com/moses-smt/mosesdecoder/b199e654df2a26ea58f234cbb642e89d9c1f269d/scripts/generic/multi-bleu.perl nlgeval/multibleu
+[ -e nlgeval/multibleu/multi-bleu.perl ] && chmod +x nlgeval/multibleu/multi-bleu.perl
