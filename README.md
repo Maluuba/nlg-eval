@@ -32,8 +32,6 @@ Python 2.7 has also been tested with mostly the same dependencies but an older v
 
 For the initial one-time setup, make sure java 1.8.0 is installed. After that just run:
     
-    pip install six
-
     # install the python dependencies
     pip install -e .
 
