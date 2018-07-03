@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import six
+import sys
 from setuptools import setup
 
 try:
@@ -8,7 +8,7 @@ try:
 except:
     from pip.req import parse_requirements
 requirements_path = 'requirements.txt'
-if six.PY2:
+if sys.version_info[0] < 3:
     requirements_path = 'requirements_py2.txt'
 install_reqs = parse_requirements(requirements_path, session=False)
 reqs = [str(ir.req) for ir in install_reqs]
