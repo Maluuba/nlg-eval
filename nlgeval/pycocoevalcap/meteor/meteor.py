@@ -3,11 +3,10 @@
 # Python wrapper for METEOR implementation, by Xinlei Chen
 # Acknowledge Michael Denkowski for the generous discussion and help 
 
+import sys
 import os
 import subprocess
 import threading
-
-import six
 
 # Assumes meteor-1.5.jar is in the same directory as meteor.py.  Change as needed.
 METEOR_JAR = 'meteor-1.5.jar'
@@ -19,7 +18,7 @@ class Meteor:
         meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
         kwargs = dict()
-        if not six.PY2:
+        if sys.version_info[:2] >= (3, 6):
             kwargs['encoding'] = 'utf-8'
         self.meteor_p = subprocess.Popen(meteor_cmd,
                                          cwd=os.path.dirname(os.path.abspath(__file__)),
