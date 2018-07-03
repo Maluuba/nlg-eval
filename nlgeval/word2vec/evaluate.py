@@ -10,7 +10,7 @@ except ImportError:
 
 class Embedding(object):
     def __init__(self):
-        path = os.path.join(os.path.dirname(__file__), '..', 'data')
+        path = os.environ.get('NLGEVAL_DATA', os.path.join(os.path.dirname(__file__), '..', 'data'))
         self.m = KeyedVectors.load(os.path.join(path, 'glove.6B.300d.model.bin'), mmap='r')
         try:
             self.unk = self.m.vectors.mean(axis=0)
