@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
 try:
     from pip._internal.req import parse_requirements
@@ -19,6 +19,6 @@ setup(name='nlg-eval',
       author='Shikhar Sharma, Hannes Schulz',
       author_email='shikhar.sharma@microsoft.com, hannes.schulz@microsoft.com, justin.harris@microsoft.com',
       url='https://github.com/Maluuba/nlg-eval',
-      packages=['nlgeval'],
+      packages=find_packages(),
       scripts=['bin/nlg-eval'],
       install_requires=reqs)
