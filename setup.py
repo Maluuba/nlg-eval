@@ -20,5 +20,6 @@ setup(name='nlg-eval',
       author_email='shikhar.sharma@microsoft.com, hannes.schulz@microsoft.com, justin.harris@microsoft.com',
       url='https://github.com/Maluuba/nlg-eval',
       packages=find_packages(),
+      include_package_data=True,
       scripts=['bin/nlg-eval'],
       install_requires=reqs)
