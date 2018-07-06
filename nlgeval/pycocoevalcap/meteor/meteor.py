@@ -12,15 +12,11 @@ import threading
 METEOR_JAR = 'meteor-1.5.jar'
 
 
-def conditional_enc(s):
-    if sys.version_info[0] == 3 and sys.version_info[1] < 6:
-        return s.encode('utf-8')
-    return s
+def enc(s):
+    return s.encode('utf-8')
 
-def conditional_dec(s):
-    if sys.version_info[0] == 3 and sys.version_info[1] < 6:
-        return s.decode('utf-8')
-    return s
+def dec(s):
+    return s.decode('utf-8')
 
 
 class Meteor:
@@ -29,8 +25,6 @@ class Meteor:
         meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
         kwargs = dict()
-        if sys.version_info[:2] >= (3, 6):
-            kwargs['encoding'] = 'utf-8'
         self.meteor_p = subprocess.Popen(meteor_cmd,
                                          cwd=os.path.dirname(os.path.abspath(__file__)),
                                          stdin=subprocess.PIPE,
@@ -52,11 +46,11 @@ class Meteor:
                 stat = self._stat(res[i][0], gts[i])
                 eval_line += ' ||| {}'.format(stat)
 
-            self.meteor_p.stdin.write(conditional_enc('{}\n'.format(eval_line)))
+            self.meteor_p.stdin.write(enc('{}\n'.format(eval_line)))
             self.meteor_p.stdin.flush()
             for i in range(0, len(imgIds)):
-                scores.append(float(conditional_dec(self.meteor_p.stdout.readline().strip())))
-            score = float(conditional_dec(self.meteor_p.stdout.readline()).strip())
+                scores.append(float(dec(self.meteor_p.stdout.readline().strip())))
+            score = float(dec(self.meteor_p.stdout.readline()).strip())
 
         return score, scores
 
@@ -67,27 +61,27 @@ class Meteor:
         # SCORE ||| reference 1 words ||| reference n words ||| hypothesis words
         hypothesis_str = hypothesis_str.replace('|||', '').replace('  ', ' ')
         score_line = ' ||| '.join(('SCORE', ' ||| '.join(reference_list), hypothesis_str))
-        self.meteor_p.stdin.write(conditional_enc(score_line))
-        self.meteor_p.stdin.write(conditional_enc('\n'))
+        self.meteor_p.stdin.write(enc(score_line))
+        self.meteor_p.stdin.write(enc('\n'))
         self.meteor_p.stdin.flush()
-        return conditional_dec(self.meteor_p.stdout.readline()).strip()
+        return dec(self.meteor_p.stdout.readline()).strip()
 
     def _score(self, hypothesis_str, reference_list):
         with self.lock:
             # SCORE ||| reference 1 words ||| reference n words ||| hypothesis words
             hypothesis_str = hypothesis_str.replace('|||', '').replace('  ', ' ')
             score_line = ' ||| '.join(('SCORE', ' ||| '.join(reference_list), hypothesis_str))
-            self.meteor_p.stdin.write(conditional_enc('{}\n'.format(score_line)))
+            self.meteor_p.stdin.write(enc('{}\n'.format(score_line)))
             self.meteor_p.stdin.flush()
-            stats = conditional_dec(self.meteor_p.stdout.readline()).strip()
+            stats = dec(self.meteor_p.stdout.readline()).strip()
             eval_line = 'EVAL ||| {}'.format(stats)
             # EVAL ||| stats 
-            self.meteor_p.stdin.write(conditional_enc('{}\n'.format(eval_line)))
+            self.meteor_p.stdin.write(enc('{}\n'.format(eval_line)))
             self.meteor_p.stdin.flush()
-            score = float(conditional_dec(self.meteor_p.stdout.readline()).strip())
+            score = float(dec(self.meteor_p.stdout.readline()).strip())
             # bug fix: there are two values returned by the jar file, one average, and one all, so do it twice
             # thanks for Andrej for pointing this out
-            score = float(conditional_dec(self.meteor_p.stdout.readline()).strip())
+            score = float(dec(self.meteor_p.stdout.readline()).strip())
         return score
 
     def __del__(self):
