@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-import six
-from setuptools import setup
+import sys
+from setuptools import setup, find_packages
 
 try:
     from pip._internal.req import parse_requirements
 except:
     from pip.req import parse_requirements
 requirements_path = 'requirements.txt'
-if six.PY2:
+if sys.version_info[0] < 3:
     requirements_path = 'requirements_py2.txt'
 install_reqs = parse_requirements(requirements_path, session=False)
 reqs = [str(ir.req) for ir in install_reqs]
@@ -19,6 +19,7 @@ setup(name='nlg-eval',
       author='Shikhar Sharma, Hannes Schulz',
       author_email='shikhar.sharma@microsoft.com, hannes.schulz@microsoft.com, justin.harris@microsoft.com',
       url='https://github.com/Maluuba/nlg-eval',
-      packages=['nlgeval'],
+      packages=find_packages(),
+      include_package_data=True,
       scripts=['bin/nlg-eval'],
       install_requires=reqs)

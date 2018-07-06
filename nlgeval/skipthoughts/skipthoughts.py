@@ -20,8 +20,8 @@ profile = False
 #-----------------------------------------------------------------------------#
 # Specify model and table locations here
 #-----------------------------------------------------------------------------#
-path_to_models = os.path.join(os.path.dirname(__file__), '..', 'data')
-path_to_tables = os.path.join(os.path.dirname(__file__), '..', 'data')
+path_to_models = os.environ.get('NLGEVAL_DATA', os.path.join(os.path.dirname(__file__), '..', 'data'))
+path_to_tables = os.environ.get('NLGEVAL_DATA', os.path.join(os.path.dirname(__file__), '..', 'data'))
 #-----------------------------------------------------------------------------#
 
 path_to_umodel = os.path.join(path_to_models, 'uni_skip.npz')

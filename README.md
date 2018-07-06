@@ -32,8 +32,6 @@ Python 2.7 has also been tested with mostly the same dependencies but an older v
 
 For the initial one-time setup, make sure java 1.8.0 is installed. After that just run:
     
-    pip install six
-
     # install the python dependencies
     pip install -e .
 
@@ -128,6 +126,13 @@ CIDEr score for a reference dataset with only 1 image (or example for NLG) will 
 images, set idf to "coco-val-df" instead, which uses IDF from the MSCOCO Vaildation Dataset for reliable results. This has
 not been adapted in this code. For this use-case, apply patches from
 [vrama91/coco-caption](https://github.com/vrama91/coco-caption).
+
+
+## External data directory
+
+To mount an already prepared data directory into a docker or share it between
+users, you can set the `NLGEVAL_DATA` environment variable to let nlg-eval know
+where to find its models and data.
 
 ## Microsoft Open Source Code of Conduct ##
 This project has adopted the [Microsoft Open Source Code of
