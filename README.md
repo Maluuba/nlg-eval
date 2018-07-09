@@ -39,9 +39,12 @@ For the initial one-time setup, make sure java 1.8.0 is installed. After that ju
     ./setup.sh
 
 ## Usage ##
-Once setup has completed, the metrics can be evaluated by just running:
+Once setup has completed, the metrics can be evaluated with a Python API or in the command line.
+
+Examples of the Python API can be found in [test_nlgeval.py](nlgeval/tests/test_nlgeval.py).
 
 ### Standalone ###
+Example:
 
     nlg-eval --hypothesis=examples/hyp.txt --references=examples/ref1.txt --references=examples/ref2.txt
 
@@ -118,8 +121,6 @@ gives
     VectorExtremaCosineSimilarity: 0.568696
     GreedyMatchingScore: 0.784205
 
-Examples of the Python API can be found in [test_nlgeval.py](nlgeval/tests/test_nlgeval.py),
-
 ## Important Note ##
 CIDEr by default (with idf parameter set to "corpus" mode) computes IDF values using the reference sentences provided. Thus,
 CIDEr score for a reference dataset with only 1 image (or example for NLG) will be zero. When evaluating using one (or few)
@@ -130,9 +131,11 @@ not been adapted in this code. For this use-case, apply patches from
 
 ## External data directory
 
-To mount an already prepared data directory into a docker or share it between
+To mount an already prepared data directory to a Docker container or share it between
 users, you can set the `NLGEVAL_DATA` environment variable to let nlg-eval know
-where to find its models and data.
+where to find its models and data.  E.g.
+
+    NLGEVAL_DATA=~/workspace/nlg-eval/nlgeval/data
 
 ## Microsoft Open Source Code of Conduct ##
 This project has adopted the [Microsoft Open Source Code of
