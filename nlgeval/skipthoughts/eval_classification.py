@@ -1,9 +1,11 @@
+from __future__ import print_function
+from __future__ import absolute_import
 # Experiment scripts for binary classification benchmarks (e.g. MR, CR, MPQA, SUBJ)
 
 import numpy as np
 import sys
-import nbsvm
-import dataset_handler
+from . import nbsvm
+from . import dataset_handler
 
 from scipy.sparse import hstack
 
@@ -66,7 +68,7 @@ def eval_nested_kfold(encoder, name, loc='./data/', k=10, seed=1234, use_nb=Fals
                 clf.fit(X_innertrain, y_innertrain)
                 acc = clf.score(X_innertest, y_innertest)
                 innerscores.append(acc)
-                print (s, acc)
+                print((s, acc))
 
             # Append mean score
             scanscores.append(np.mean(innerscores))
@@ -74,8 +76,8 @@ def eval_nested_kfold(encoder, name, loc='./data/', k=10, seed=1234, use_nb=Fals
         # Get the index of the best score
         s_ind = np.argmax(scanscores)
         s = scan[s_ind]
-        print scanscores
-        print s
+        print(scanscores)
+        print(s)
  
         # NB (if applicable)
         if use_nb:
@@ -90,7 +92,7 @@ def eval_nested_kfold(encoder, name, loc='./data/', k=10, seed=1234, use_nb=Fals
         # Evaluate
         acc = clf.score(X_test, y_test)
         scores.append(acc)
-        print scores
+        print(scores)
 
     return scores
 

@@ -1,6 +1,8 @@
 """
 Helper functions for skip-thoughts
 """
+import warnings
+
 import theano
 import theano.tensor as tensor
 import numpy
@@ -123,4 +125,3 @@ def concatenate(tensor_list, axis=0):
         offset += tt.shape[axis]
 
     return out
-

@@ -1,6 +1,7 @@
 """
 Main trainer function
 """
+from __future__ import print_function
 import theano
 import theano.tensor as tensor
 
@@ -71,21 +72,21 @@ def trainer(X, C, stmodel,
     model_options['sampleFreq'] = sampleFreq
     model_options['reload_'] = reload_
 
-    print model_options
+    print(model_options)
 
     # reload options
     if reload_ and os.path.exists(saveto):
-        print 'reloading...' + saveto
+        print('reloading...' + saveto)
         with open('%s.pkl'%saveto, 'rb') as f:
             models_options = pkl.load(f)
 
     # load dictionary
-    print 'Loading dictionary...'
+    print('Loading dictionary...')
     worddict = load_dictionary(dictionary)
 
     # Load pre-trained embeddings, if applicable
     if embeddings != None:
-        print 'Loading embeddings...'
+        print('Loading embeddings...')
         with open(embeddings, 'rb') as f:
             embed_map = pkl.load(f)
         dim_word = len(embed_map.values()[0])
@@ -107,7 +108,7 @@ def trainer(X, C, stmodel,
     word_idict[0] = '<eos>'
     word_idict[1] = 'UNK'
 
-    print 'Building model'
+    print('Building model')
     params = init_params(model_options, preemb=preemb)
     # reload parameters
     if reload_ and os.path.exists(saveto):
@@ -117,13 +118,13 @@ def trainer(X, C, stmodel,
 
     trng, inps, cost = build_model(tparams, model_options)
 
-    print 'Building sampler'
+    print('Building sampler')
     f_init, f_next = build_sampler(tparams, model_options, trng)
 
     # before any regularizer
-    print 'Building f_log_probs...',
+    print('Building f_log_probs...', end=' ')
     f_log_probs = theano.function(inps, cost, profile=False)
-    print 'Done'
+    print('Done')
 
     # weight decay, if applicable
     if decay_c > 0.:
@@ -135,12 +136,12 @@ def trainer(X, C, stmodel,
         cost += weight_decay
 
     # after any regularizer
-    print 'Building f_cost...',
+    print('Building f_cost...', end=' ')
     f_cost = theano.function(inps, cost, profile=False)
-    print 'Done'
+    print('Done')
 
-    print 'Done'
-    print 'Building f_grad...',
+    print('Done')
+    print('Building f_grad...', end=' ')
     grads = tensor.grad(cost, wrt=itemlist(tparams))
     f_grad_norm = theano.function(inps, [(g**2).sum() for g in grads], profile=False)
     f_weight_norm = theano.function([], [(t**2).sum() for k,t in tparams.iteritems()], profile=False)
@@ -157,11 +158,11 @@ def trainer(X, C, stmodel,
         grads = new_grads
 
     lr = tensor.scalar(name='lr')
-    print 'Building optimizers...',
+    print('Building optimizers...', end=' ')
     # (compute gradients), (updates parameters)
     f_grad_shared, f_update = eval(optimizer)(lr, tparams, grads, inps, cost)
 
-    print 'Optimization'
+    print('Optimization')
 
     # Each sentence in the minibatch have same length (for encoder)
     train_iter = homogeneous_data.HomogeneousData([X,C], batch_size=batch_size, maxlen=maxlen_w)
@@ -171,7 +172,7 @@ def trainer(X, C, stmodel,
     for eidx in xrange(max_epochs):
         n_samples = 0
 
-        print 'Epoch ', eidx
+        print('Epoch ', eidx)
 
         for x, c in train_iter:
             n_samples += len(x)
@@ -180,7 +181,7 @@ def trainer(X, C, stmodel,
             x, mask, ctx = homogeneous_data.prepare_data(x, c, worddict, stmodel, maxlen=maxlen_w, n_words=n_words)
 
             if x == None:
-                print 'Minibatch with zero sample under length ', maxlen_w
+                print('Minibatch with zero sample under length ', maxlen_w)
                 uidx -= 1
                 continue
 
@@ -190,19 +191,19 @@ def trainer(X, C, stmodel,
             ud = time.time() - ud_start
 
             if numpy.isnan(cost) or numpy.isinf(cost):
-                print 'NaN detected'
+                print('NaN detected')
                 return 1., 1., 1.
 
             if numpy.mod(uidx, dispFreq) == 0:
-                print 'Epoch ', eidx, 'Update ', uidx, 'Cost ', cost, 'UD ', ud
+                print('Epoch ', eidx, 'Update ', uidx, 'Cost ', cost, 'UD ', ud)
 
             if numpy.mod(uidx, saveFreq) == 0:
-                print 'Saving...',
+                print('Saving...', end=' ')
 
                 params = unzip(tparams)
                 numpy.savez(saveto, history_errs=[], **params)
                 pkl.dump(model_options, open('%s.pkl'%saveto, 'wb'))
-                print 'Done'
+                print('Done')
 
             if numpy.mod(uidx, sampleFreq) == 0:
                 x_s = x
@@ -211,27 +212,27 @@ def trainer(X, C, stmodel,
                 for jj in xrange(numpy.minimum(10, len(ctx_s))):
                     sample, score = gen_sample(tparams, f_init, f_next, ctx_s[jj].reshape(1, model_options['dimctx']), model_options,
                                                trng=trng, k=1, maxlen=100, stochastic=False, use_unk=False)
-                    print 'Truth ',jj,': ',
+                    print('Truth ',jj,': ', end=' ')
                     for vv in x_s[:,jj]:
                         if vv == 0:
                             break
                         if vv in word_idict:
-                            print word_idict[vv],
+                            print(word_idict[vv], end=' ')
                         else:
-                            print 'UNK',
-                    print
+                            print('UNK', end=' ')
+                    print()
                     for kk, ss in enumerate([sample[0]]):
-                        print 'Sample (', kk,') ', jj, ': ',
+                        print('Sample (', kk,') ', jj, ': ', end=' ')
                         for vv in ss:
                             if vv == 0:
                                 break
                             if vv in word_idict:
-                                print word_idict[vv],
+                                print(word_idict[vv], end=' ')
                             else:
-                                print 'UNK',
-                    print
+                                print('UNK', end=' ')
+                    print()
 
-        print 'Seen %d samples'%n_samples
+        print('Seen %d samples'%n_samples)
 
 if __name__ == '__main__':
     pass

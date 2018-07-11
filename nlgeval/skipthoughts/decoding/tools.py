@@ -2,6 +2,7 @@
 A selection of functions for the decoder
 Loading models, generating text
 """
+from __future__ import print_function
 import theano
 import theano.tensor as tensor
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
@@ -25,12 +26,12 @@ def load_model():
     Load a trained model for decoding
     """
     # Load the worddict
-    print 'Loading dictionary...'
+    print('Loading dictionary...')
     with open(path_to_dictionary, 'rb') as f:
         worddict = pkl.load(f)
 
     # Create inverted dictionary
-    print 'Creating inverted dictionary...'
+    print('Creating inverted dictionary...')
     word_idict = dict()
     for kk, vv in worddict.iteritems():
         word_idict[vv] = kk
@@ -38,12 +39,12 @@ def load_model():
     word_idict[1] = 'UNK'
 
     # Load model options
-    print 'Loading model options...'
+    print('Loading model options...')
     with open('%s.pkl'%path_to_model, 'rb') as f:
         options = pkl.load(f)
 
     # Load parameters
-    print 'Loading model parameters...'
+    print('Loading model parameters...')
     params = init_params(options)
     params = load_params(path_to_model, params)
     tparams = init_tparams(params)
