@@ -44,7 +44,6 @@ Once setup has completed, the metrics can be evaluated with a Python API or in t
 Examples of the Python API can be found in [test_nlgeval.py](nlgeval/tests/test_nlgeval.py).
 
 ### Standalone ###
-Example:
 
     nlg-eval --hypothesis=examples/hyp.txt --references=examples/ref1.txt --references=examples/ref2.txt
 
