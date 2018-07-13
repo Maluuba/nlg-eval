@@ -25,14 +25,9 @@ function download_file() {
 	fi
 }
 
-# glove data
-if [ ! -f nlgeval/data/glove.6B.300d.txt ]
-then
-    download http://nlp.stanford.edu/data/glove.6B.zip
-    mkdir --parents nlgeval/data
-    unzip glove.6B.zip glove.6B.300d.txt -d nlgeval/data
-    rm -f glove.6B.zip
-fi
+mkdir --parents nlgeval/data
+
+python -m nltk.downloader punkt
 
 # GloVe word vectors
 if python --version 2>&1 | grep -P 'Python 2\.\d'; then
@@ -51,7 +46,9 @@ fi
 
 if [ ! -f nlgeval/data/glove.6B.300d.model.bin ]
 then
-    python -m nltk.downloader punkt
+    download http://nlp.stanford.edu/data/glove.6B.zip
+    unzip glove.6B.zip glove.6B.300d.txt -d nlgeval/data
+    rm -f glove.6B.zip
     PYTHONPATH=`pwd` python nlgeval/word2vec/generate_w2v_files.py
     rm nlgeval/data/glove.6B.300d.txt nlgeval/data/glove.6B.300d.model.txt
 fi
