@@ -1,8 +1,11 @@
 """
 Code for sequence generation
 """
-import numpy
 import copy
+
+import numpy
+from six.moves import xrange
+
 
 def gen_sample(tparams, f_init, f_next, ctx, options, trng=None, k=1, maxlen=30,
                stochastic=True, argmax=False, use_unk=False):
@@ -101,5 +104,3 @@ def gen_sample(tparams, f_init, f_next, ctx, options, trng=None, k=1, maxlen=30,
                 sample_score.append(hyp_scores[idx])
 
     return sample, sample_score
-
-

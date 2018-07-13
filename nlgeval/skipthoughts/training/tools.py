@@ -2,6 +2,7 @@
 A selection of functions for extracting vectors
 Encoder + vocab expansion
 """
+from __future__ import print_function
 import theano
 import theano.tensor as tensor
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
@@ -32,12 +33,12 @@ def load_model(embed_map=None):
     Load all model components + apply vocab expansion
     """
     # Load the worddict
-    print 'Loading dictionary...'
+    print('Loading dictionary...')
     with open(path_to_dictionary, 'rb') as f:
         worddict = pkl.load(f)
 
     # Create inverted dictionary
-    print 'Creating inverted dictionary...'
+    print('Creating inverted dictionary...')
     word_idict = dict()
     for kk, vv in worddict.iteritems():
         word_idict[vv] = kk
@@ -45,18 +46,18 @@ def load_model(embed_map=None):
     word_idict[1] = 'UNK'
 
     # Load model options
-    print 'Loading model options...'
+    print('Loading model options...')
     with open('%s.pkl'%path_to_model, 'rb') as f:
         options = pkl.load(f)
 
     # Load parameters
-    print 'Loading model parameters...'
+    print('Loading model parameters...')
     params = init_params(options)
     params = load_params(path_to_model, params)
     tparams = init_tparams(params)
 
     # Extractor functions
-    print 'Compiling encoder...'
+    print('Compiling encoder...')
     trng = RandomStreams(1234)
     trng, x, x_mask, ctx, emb = build_encoder(tparams, options)
     f_enc = theano.function([x, x_mask], ctx, name='f_enc')
@@ -66,15 +67,15 @@ def load_model(embed_map=None):
 
     # Load word2vec, if applicable
     if embed_map == None:
-        print 'Loading word2vec embeddings...'
+        print('Loading word2vec embeddings...')
         embed_map = load_googlenews_vectors(path_to_word2vec)
 
     # Lookup table using vocab expansion trick
-    print 'Creating word lookup tables...'
+    print('Creating word lookup tables...')
     table = lookup_table(options, embed_map, worddict, word_idict, f_emb)
 
     # Store everything we need in a dictionary
-    print 'Packing up...'
+    print('Packing up...')
     model = {}
     model['options'] = options
     model['table'] = table
@@ -104,7 +105,7 @@ def encode(model, X, use_norm=True, verbose=True, batch_size=128, use_eos=False)
     # Get features. This encodes by length, in order to avoid wasting computation
     for k in ds.keys():
         if verbose:
-            print k
+            print(k)
         numbatches = len(ds[k]) / batch_size + 1
         for minibatch in range(numbatches):
             caps = ds[k][minibatch::numbatches]

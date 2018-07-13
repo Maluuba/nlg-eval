@@ -1,6 +1,7 @@
 '''
 Evaluation code for image-sentence ranking
 '''
+from __future__ import print_function
 import numpy as np
 
 import theano
@@ -223,7 +224,7 @@ def validate_options(options):
 
 # Load a saved model and evaluate the results
 def evaluate(X, saveto, evaluate=False, out=False):
-    print "Loading model..."
+    print("Loading model...")
     with open('%s.pkl'%saveto, 'rb') as f:
         model_options = pkl.load(f)
 
@@ -231,18 +232,18 @@ def evaluate(X, saveto, evaluate=False, out=False):
     params = load_params(saveto, params)
     tparams = init_tparams(params)
 
-    print 'Building encoder'
+    print('Building encoder')
     inps_e, lim, ls = build_encoder(tparams, model_options)
     f_emb = theano.function(inps_e, [lim, ls], profile=False)
 
-    print 'Compute embeddings...'
+    print('Compute embeddings...')
     lim, ls = f_emb(X[1], X[2])
 
     if evaluate:
         (r1, r5, r10, medr) = i2t(lim, ls)
-        print "Image to text: %.1f, %.1f, %.1f, %.1f" % (r1, r5, r10, medr)
+        print("Image to text: %.1f, %.1f, %.1f, %.1f" % (r1, r5, r10, medr))
         (r1i, r5i, r10i, medri) = t2i(lim, ls)
-        print "Text to image: %.1f, %.1f, %.1f, %.1f" % (r1i, r5i, r10i, medri)
+        print("Text to image: %.1f, %.1f, %.1f, %.1f" % (r1i, r5i, r10i, medri))
     if out:
         return lim, ls
 
@@ -283,39 +284,39 @@ def trainer(train, dev, # training and development tuples
     model_options['reload_'] = reload_
 
     model_options = validate_options(model_options)
-    print model_options
+    print(model_options)
 
     # reload options
     if reload_ and os.path.exists(saveto):
-        print "Reloading options"
+        print("Reloading options")
         with open('%s.pkl'%saveto, 'rb') as f:
             model_options = pkl.load(f)
 
-    print 'Building model'
+    print('Building model')
     params = init_params(model_options)
     # reload parameters
     if reload_ and os.path.exists(saveto):
-        print "Reloading model"
+        print("Reloading model")
         params = load_params(saveto, params)
 
     tparams = init_tparams(params)
 
     inps, cost = build_model(tparams, model_options)
 
-    print 'Building encoder'
+    print('Building encoder')
     inps_e, lim, ls = build_encoder(tparams, model_options)
 
-    print 'Building functions'
+    print('Building functions')
     f_cost = theano.function(inps, -cost, profile=False)
     f_emb = theano.function(inps_e, [lim, ls], profile=False)
 
     # gradient computation
-    print 'Computing gradients'
+    print('Computing gradients')
     grads = tensor.grad(cost, wrt=itemlist(tparams))
     lr = tensor.scalar(name='lr')
     f_grad_shared, f_update = eval(optimizer)(lr, tparams, grads, inps, cost)
 
-    print 'Optimization'
+    print('Optimization')
 
     uidx = 0
     estop = False
@@ -354,27 +355,27 @@ def trainer(train, dev, # training and development tuples
             ud_duration = time.time() - ud_start
 
             if numpy.mod(uidx, dispFreq) == 0:
-                print 'Epoch ', eidx, 'Update ', uidx, 'Cost ', cost, 'UD ', ud_duration
+                print('Epoch ', eidx, 'Update ', uidx, 'Cost ', cost, 'UD ', ud_duration)
 
             if numpy.mod(uidx, validFreq) == 0:
 
-                print 'Computing ranks...'
+                print('Computing ranks...')
                 lim, ls = f_emb(dev[1], dev[2])
                 (r1, r5, r10, medr) = i2t(lim, ls)
-                print "Image to text: %.1f, %.1f, %.1f, %.1f" % (r1, r5, r10, medr)
+                print("Image to text: %.1f, %.1f, %.1f, %.1f" % (r1, r5, r10, medr))
                 (r1i, r5i, r10i, medri) = t2i(lim, ls)
-                print "Text to image: %.1f, %.1f, %.1f, %.1f" % (r1i, r5i, r10i, medri)
+                print("Text to image: %.1f, %.1f, %.1f, %.1f" % (r1i, r5i, r10i, medri))
 
                 currscore = r1 + r5 + r10 + r1i + r5i + r10i
                 if currscore > curr:
                     curr = currscore
 
                     # Save model
-                    print 'Saving...',
+                    print('Saving...', end=' ')
                     params = unzip(tparams)
                     numpy.savez(saveto, history_errs=history_errs, **params)
                     pkl.dump(model_options, open('%s.pkl'%saveto, 'wb'))
-                    print 'Done'
+                    print('Done')
 
 
 def i2t(images, captions, npts=None):

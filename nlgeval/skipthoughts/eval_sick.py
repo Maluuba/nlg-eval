@@ -1,6 +1,7 @@
 '''
 Evaluation code for the SICK dataset (SemEval 2014 Task 1)
 '''
+from __future__ import print_function
 import numpy as np
 import os.path
 from sklearn.metrics import mean_squared_error as mse
@@ -17,49 +18,49 @@ def evaluate(encoder, seed=1234, evaltest=False, loc='./data/'):
     """
     Run experiment
     """
-    print 'Preparing data...'
+    print('Preparing data...')
     train, dev, test, scores = load_data(loc)
     train[0], train[1], scores[0] = shuffle(train[0], train[1], scores[0], random_state=seed)
     
-    print 'Computing training skipthoughts...'
+    print('Computing training skipthoughts...')
     trainA = encoder.encode(train[0], verbose=False, use_eos=True)
     trainB = encoder.encode(train[1], verbose=False, use_eos=True)
     
-    print 'Computing development skipthoughts...'
+    print('Computing development skipthoughts...')
     devA = encoder.encode(dev[0], verbose=False, use_eos=True)
     devB = encoder.encode(dev[1], verbose=False, use_eos=True)
 
-    print 'Computing feature combinations...'
+    print('Computing feature combinations...')
     trainF = np.c_[np.abs(trainA - trainB), trainA * trainB]
     devF = np.c_[np.abs(devA - devB), devA * devB]
 
-    print 'Encoding labels...'
+    print('Encoding labels...')
     trainY = encode_labels(scores[0])
     devY = encode_labels(scores[1])
 
-    print 'Compiling model...'
+    print('Compiling model...')
     lrmodel = prepare_model(ninputs=trainF.shape[1])
 
-    print 'Training...'
+    print('Training...')
     bestlrmodel = train_model(lrmodel, trainF, trainY, devF, devY, scores[1])
 
     if evaltest:
-        print 'Computing test skipthoughts...'
+        print('Computing test skipthoughts...')
         testA = encoder.encode(test[0], verbose=False, use_eos=True)
         testB = encoder.encode(test[1], verbose=False, use_eos=True)
 
-        print 'Computing feature combinations...'
+        print('Computing feature combinations...')
         testF = np.c_[np.abs(testA - testB), testA * testB]
 
-        print 'Evaluating...'
+        print('Evaluating...')
         r = np.arange(1,6)
         yhat = np.dot(bestlrmodel.predict_proba(testF, verbose=2), r)
         pr = pearsonr(yhat, scores[2])[0]
         sr = spearmanr(yhat, scores[2])[0]
         se = mse(yhat, scores[2])
-        print 'Test Pearson: ' + str(pr)
-        print 'Test Spearman: ' + str(sr)
-        print 'Test MSE: ' + str(se)
+        print('Test Pearson: ' + str(pr))
+        print('Test Spearman: ' + str(sr))
+        print('Test MSE: ' + str(se))
 
         return yhat
 
@@ -89,7 +90,7 @@ def train_model(lrmodel, X, Y, devX, devY, devscores):
         yhat = np.dot(lrmodel.predict_proba(devX, verbose=2), r)
         score = pearsonr(yhat, devscores)[0]
         if score > best:
-            print score
+            print(score)
             best = score
             bestlrmodel = prepare_model(ninputs=X.shape[1])
             bestlrmodel.set_weights(lrmodel.get_weights())
@@ -98,7 +99,7 @@ def train_model(lrmodel, X, Y, devX, devY, devscores):
 
     yhat = np.dot(bestlrmodel.predict_proba(devX, verbose=2), r)
     score = pearsonr(yhat, devscores)[0]
-    print 'Dev Pearson: ' + str(score)
+    print('Dev Pearson: ' + str(score))
     return bestlrmodel
     
 

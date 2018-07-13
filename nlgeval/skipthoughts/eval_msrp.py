@@ -1,3 +1,4 @@
+from __future__ import print_function
 # Evaluation for MSRP
 
 import numpy as np
@@ -17,22 +18,22 @@ def evaluate(encoder, k=10, seed=1234, evalcv=True, evaltest=False, use_feats=Tr
     k: number of CV folds
     test: whether to evaluate on test set
     """
-    print 'Preparing data...'
+    print('Preparing data...')
     traintext, testtext, labels = load_data(loc)
 
-    print 'Computing training skipthoughts...'
+    print('Computing training skipthoughts...')
     trainA = encoder.encode(traintext[0], verbose=False)
     trainB = encoder.encode(traintext[1], verbose=False)
 
     if evalcv:
-        print 'Running cross-validation...'
+        print('Running cross-validation...')
         C = eval_kfold(trainA, trainB, traintext, labels[0], shuffle=True, k=10, seed=1234, use_feats=use_feats)
 
     if evaltest:
         if not evalcv:
             C = 4    # Best parameter found from CV (combine-skip with use_feats=True)
 
-        print 'Computing testing skipthoughts...'
+        print('Computing testing skipthoughts...')
         testA = encoder.encode(testtext[0], verbose=False)
         testB = encoder.encode(testtext[1], verbose=False)
 
@@ -43,12 +44,12 @@ def evaluate(encoder, k=10, seed=1234, evalcv=True, evaltest=False, use_feats=Tr
             train_features = np.c_[np.abs(trainA - trainB), trainA * trainB]
             test_features = np.c_[np.abs(testA - testB), testA * testB]
 
-        print 'Evaluating...'
+        print('Evaluating...')
         clf = LogisticRegression(C=C)
         clf.fit(train_features, labels[0])
         yhat = clf.predict(test_features)
-        print 'Test accuracy: ' + str(clf.score(test_features, labels[1]))
-        print 'Test F1: ' + str(f1(labels[1], yhat))
+        print('Test accuracy: ' + str(clf.score(test_features, labels[1])))
+        print('Test F1: ' + str(f1(labels[1], yhat)))
 
 
 def load_data(loc='./data/'):
@@ -167,17 +168,17 @@ def eval_kfold(A, B, train, labels, shuffle=True, k=10, seed=1234, use_feats=Fal
             yhat = clf.predict(X_test)
             fscore = f1(y_test, yhat)
             scanscores.append(fscore)
-            print (s, fscore)
+            print((s, fscore))
 
         # Append mean score
         scores.append(np.mean(scanscores))
-        print scores
+        print(scores)
 
     # Get the index of the best score
     s_ind = np.argmax(scores)
     s = scan[s_ind]
-    print scores
-    print s
+    print(scores)
+    print(s)
     return s
 
 
