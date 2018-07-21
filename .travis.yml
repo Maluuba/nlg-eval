@@ -1,0 +1,9 @@
+language: python
+python:
+  - "3.6"
+  - "2.7"
+install:
+  - pip install -U -e .
+  - apt-get install --yes unzip default-jdk
+  - ./setup.sh
+script: python -m unittest discover .
