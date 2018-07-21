@@ -1,9 +1,11 @@
+dist: trusty
+sudo: false
 language: python
 python:
   - "3.6"
   - "2.7"
 install:
+  - apt-get install --yes default-jdk libpython unzip
   - pip install -U -e .
-  - apt-get install --yes unzip default-jdk
   - ./setup.sh
 script: python -m unittest discover .
