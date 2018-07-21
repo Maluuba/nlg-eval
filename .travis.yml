@@ -1,5 +1,6 @@
 dist: trusty
-sudo: false
+# Set sudo to `true` so that we don't use a Docker container and don't run into Docker reporting incorrect memory available to old versions of Java.
+sudo: true
 language: python
 python:
   - "3.6"
