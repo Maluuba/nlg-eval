@@ -5,7 +5,10 @@ python:
   - "3.6"
   - "2.7"
 before_install:
-  - sudo apt-get install --yes default-jdk unzip
+  # Handle boto issues in Travis: https://github.com/travis-ci/travis-ci/issues/7940
+  - export BOTO_CONFIG=/dev/null
+  - type unzip || sudo apt-get install --yes unzip
+  - java -version || sudo apt-get install --yes default-jdk 
 install:
   - pip install -U -e .
   - ./setup.sh
