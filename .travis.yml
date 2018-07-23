@@ -8,6 +8,7 @@ python:
 before_install:
   # Handle boto issues in Travis: https://github.com/travis-ci/travis-ci/issues/7940
   - export BOTO_CONFIG=/dev/null
+  - export _JAVA_OPTIONS="-Xmx1G"
   - type unzip || sudo apt-get install --yes unzip
   - java -version || sudo apt-get install --yes default-jdk 
 install:
