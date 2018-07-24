@@ -22,8 +22,15 @@ def dec(s):
 class Meteor:
 
     def __init__(self):
-        meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR,
+        # Used to guarantee thread safety
+        self.lock = threading.Lock()
+
+        # FIXME Don't merge free calls.
+        subprocess.call(['free', '-hm'])
+        meteor_cmd = ['java', '-jar', '-Xms64M', '-Xmx2G', METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
+        # FIXME Don't merge free calls.
+        subprocess.call(['free', '-hm'])
         env = os.environ.copy()
         env['LC_ALL'] = "C"
         self.meteor_p = subprocess.Popen(meteor_cmd,
@@ -32,8 +39,6 @@ class Meteor:
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)
-        # Used to guarantee thread safety
-        self.lock = threading.Lock()
 
     def compute_score(self, gts, res):
         assert (gts.keys() == res.keys())
