@@ -15,4 +15,4 @@ install:
   - pip install -U -e .
   - pip install pytest
   - ./setup.sh
-script: pytest
+script: pytest --capture=no

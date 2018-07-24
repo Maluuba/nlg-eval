@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from nlgeval.pycocoevalcap.meteor.meteor import Meteor
