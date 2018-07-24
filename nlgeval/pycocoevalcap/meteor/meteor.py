@@ -91,6 +91,8 @@ class Meteor:
         return score
 
     def __del__(self):
+        # FIXME Don't merge print statement.
+        print("deconstructing Meteor")
         with self.lock:
             self.meteor_p.stdin.close()
             self.meteor_p.kill()

@@ -6,6 +6,7 @@ from nlgeval.pycocoevalcap.meteor.meteor import Meteor
 class TestMeteor(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        print("running Meteor tests")
         cls.m = Meteor()
 
     def test_compute_score(self):

@@ -13,5 +13,6 @@ before_install:
   - java -version || sudo apt-get install --yes default-jdk 
 install:
   - pip install -U -e .
+  - pip install pytest
   - ./setup.sh
-script: python -m unittest discover .
+script: pytest
