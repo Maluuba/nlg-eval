@@ -93,7 +93,11 @@ class Meteor:
     def __del__(self):
         # FIXME Don't merge print statement.
         print("deconstructing Meteor")
+        # FIXME Don't merge free calls.
+        subprocess.call(['free', '-hm'])
         with self.lock:
             self.meteor_p.stdin.close()
             self.meteor_p.kill()
             self.meteor_p.wait()
+        # FIXME Don't merge free calls.
+        subprocess.call(['free', '-hm'])
