@@ -64,7 +64,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         cosine_similarity = np.max(cosine_similarity, axis=0).mean()
         print("SkipThoughtsCosineSimilairty: %0.6f" % (cosine_similarity))
         ret_scores['SkipThoughtCS'] = cosine_similarity
-        del encoder, model
+        del encoder, model, vector_hyps, ref_list_T, vector_refs
 
     # FIXME Don't merge free calls.
     print("AFTER SKIPTHOUGHTS")
