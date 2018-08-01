@@ -4,10 +4,10 @@ from __future__ import print_function
 
 from six.moves import map
 
-from nlgeval.pycocoevalcap.bleu.bleu import Bleu
-from nlgeval.pycocoevalcap.cider.cider import Cider
-from nlgeval.pycocoevalcap.meteor.meteor import Meteor
-from nlgeval.pycocoevalcap.rouge.rouge import Rouge
+from .pycocoevalcap.bleu.bleu import Bleu
+from .pycocoevalcap.cider.cider import Cider
+from .pycocoevalcap.meteor.meteor import Meteor
+from .pycocoevalcap.rouge.rouge import Rouge
 
 
 def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=False, no_glove=False):
@@ -41,7 +41,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
                 ret_scores[method] = score
 
     if not no_skipthoughts:
-        from nlgeval.skipthoughts import skipthoughts
+        from .skipthoughts import skipthoughts
         import numpy as np
         from sklearn.metrics.pairwise import cosine_similarity
 
@@ -56,7 +56,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         ret_scores['SkipThoughtCS'] = cosine_similarity
 
     if not no_glove:
-        from nlgeval.word2vec.evaluate import eval_emb_metrics
+        from .word2vec.evaluate import eval_emb_metrics
         import numpy as np
 
         glove_hyps = [h.strip() for h in hyp_list]
@@ -102,7 +102,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
                 ret_scores[method] = score
 
     if not no_skipthoughts:
-        from nlgeval.skipthoughts import skipthoughts
+        from .skipthoughts import skipthoughts
         import numpy as np
         from sklearn.metrics.pairwise import cosine_similarity
 
@@ -116,7 +116,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
         ret_scores['SkipThoughtCS'] = cosine_similarity
 
     if not no_glove:
-        from nlgeval.word2vec.evaluate import eval_emb_metrics
+        from .word2vec.evaluate import eval_emb_metrics
         import numpy as np
 
         glove_hyps = [h.strip() for h in hyp_list]
@@ -155,7 +155,7 @@ class NLGEval(object):
         ]
 
     def load_skipthought_model(self):
-        from nlgeval.skipthoughts import skipthoughts
+        from .skipthoughts import skipthoughts
         import numpy as np
         from sklearn.metrics.pairwise import cosine_similarity
         self.np = np
@@ -165,8 +165,8 @@ class NLGEval(object):
         self.skipthought_encoder = skipthoughts.Encoder(model)
 
     def load_glove(self):
-        from nlgeval.word2vec.evaluate import Embedding
-        from nlgeval.word2vec.evaluate import eval_emb_metrics
+        from .word2vec.evaluate import Embedding
+        from .word2vec.evaluate import eval_emb_metrics
         import numpy as np
         self.eval_emb_metrics = eval_emb_metrics
         self.np = np
