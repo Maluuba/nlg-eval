@@ -2,6 +2,7 @@
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 from __future__ import print_function
 
+import six
 from six.moves import map
 
 from nlgeval.pycocoevalcap.bleu.bleu import Bleu
@@ -76,9 +77,9 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
 
 
 def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False, no_glove=False):
-    assert isinstance(hyp, str)
+    assert isinstance(hyp, six.string_types)
 
-    if isinstance(ref, str):
+    if isinstance(ref, six.string_types):
         ref = ref.split('||<|>||')  # special delimiter for backward compatibility
     ref = [a.strip() for a in ref]
     refs = {0: ref}
@@ -175,7 +176,7 @@ class NLGEval(object):
         self.glove_emb = Embedding()
 
     def compute_individual_metrics(self, ref, hyp):
-        assert isinstance(hyp, str)
+        assert isinstance(hyp, six.string_types)
         ref = [a.strip() for a in ref]
         refs = {0: ref}
         ref_list = [ref]
