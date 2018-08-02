@@ -11,6 +11,11 @@ from nlgeval.pycocoevalcap.meteor.meteor import Meteor
 from nlgeval.pycocoevalcap.rouge.rouge import Rouge
 
 
+# str/unicode stripping in Python 2 and 3 instead of `str.strip`.
+def _strip(s):
+    return s.strip()
+
+
 def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=False, no_glove=False):
     with open(hypothesis, 'r') as f:
         hyp_list = f.readlines()
@@ -18,7 +23,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
     for iidx, reference in enumerate(references):
         with open(reference, 'r') as f:
             ref_list.append(f.readlines())
-    ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
+    ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
     refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
     hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
     assert len(refs) == len(hyps)
@@ -216,7 +221,7 @@ class NLGEval(object):
         return ret_scores
 
     def compute_metrics(self, ref_list, hyp_list):
-        ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
+        ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
         refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
         hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
         assert len(refs) == len(hyps)
