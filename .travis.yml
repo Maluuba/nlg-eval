@@ -15,6 +15,5 @@ install:
   - pip install -U -e .
   - pip install pytest
   - ./setup.sh
-# Ignore the METEOR tests since running them with the rest causes memory issues.addons:
-# The METEOR tests are mostly redundant anyway.
-script: pytest --capture=no --ignore=nlgeval/pycocoevalcap/meteor
+# Just run the main tests since running the rest causes memory issues on Travis.
+script: pytest --capture=no -k test_compute_metrics_oo
