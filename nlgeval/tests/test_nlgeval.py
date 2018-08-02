@@ -15,8 +15,8 @@ class TestNlgEval(unittest.TestCase):
 
         # Individual Metrics
         scores = n.compute_individual_metrics(ref=["this is a test",
-                                                        "this is also a test"],
-                                                   hyp="this is a good test")
+                                                   "this is also a test"],
+                                              hyp="this is a good test")
         self.assertAlmostEqual(0.799999, scores['Bleu_1'], places=5)
         self.assertAlmostEqual(0.632455, scores['Bleu_2'], places=5)
         self.assertAlmostEqual(0.5108729, scores['Bleu_3'], places=5)

@@ -22,11 +22,6 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
     hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
     assert len(refs) == len(hyps)
 
-    # FIXME Don't merge free calls.
-    print("BEFORE OVERLAP")
-    import subprocess
-    subprocess.call(['free', '-hm'])
-
     ret_scores = {}
     if not no_overlap:
         scorers = [
@@ -46,10 +41,6 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
                 ret_scores[method] = score
         del scorers
 
-    # FIXME Don't merge free calls.
-    print("AFTER OVERLAP")
-    subprocess.call(['free', '-hm'])
-
     if not no_skipthoughts:
         from nlgeval.skipthoughts import skipthoughts
         import numpy as np
@@ -66,10 +57,6 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         ret_scores['SkipThoughtCS'] = cosine_similarity
         del encoder, model, vector_hyps, ref_list_T, vector_refs
 
-    # FIXME Don't merge free calls.
-    print("AFTER SKIPTHOUGHTS")
-    subprocess.call(['free', '-hm'])
-
     if not no_glove:
         from nlgeval.word2vec.evaluate import eval_emb_metrics
         import numpy as np
@@ -84,10 +71,6 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
             name, value = score.split(':')
             value = float(value.strip())
             ret_scores[name] = value
-
-    # FIXME Don't merge free calls.
-    print("AFTER GLoVE")
-    subprocess.call(['free', '-hm'])
 
     return ret_scores
 

@@ -25,12 +25,8 @@ class Meteor:
         # Used to guarantee thread safety
         self.lock = threading.Lock()
 
-        # FIXME Don't merge free calls.
-        subprocess.call(['free', '-hm'])
         meteor_cmd = ['java', '-jar', '-Xms64M', '-Xmx2G', METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
-        # FIXME Don't merge free calls.
-        subprocess.call(['free', '-hm'])
         env = os.environ.copy()
         env['LC_ALL'] = "C"
         self.meteor_p = subprocess.Popen(meteor_cmd,
@@ -91,13 +87,7 @@ class Meteor:
         return score
 
     def __del__(self):
-        # FIXME Don't merge print statement.
-        print("deconstructing Meteor")
-        # FIXME Don't merge free calls.
-        subprocess.call(['free', '-hm'])
         with self.lock:
             self.meteor_p.stdin.close()
             self.meteor_p.kill()
             self.meteor_p.wait()
-        # FIXME Don't merge free calls.
-        subprocess.call(['free', '-hm'])
