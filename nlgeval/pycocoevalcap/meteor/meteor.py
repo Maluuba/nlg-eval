@@ -25,7 +25,7 @@ class Meteor:
         # Used to guarantee thread safety
         self.lock = threading.Lock()
 
-        meteor_cmd = ['java', '-jar', '-Xms64M', '-Xmx2G', METEOR_JAR,
+        meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
         env = os.environ.copy()
         env['LC_ALL'] = "C"
