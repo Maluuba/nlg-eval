@@ -22,6 +22,9 @@ def dec(s):
 class Meteor:
 
     def __init__(self):
+        # Used to guarantee thread safety
+        self.lock = threading.Lock()
+
         meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
         env = os.environ.copy()
@@ -32,8 +35,6 @@ class Meteor:
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)
-        # Used to guarantee thread safety
-        self.lock = threading.Lock()
 
     def compute_score(self, gts, res):
         assert (gts.keys() == res.keys())

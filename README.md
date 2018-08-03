@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Maluuba/nlg-eval.svg?branch=master)](https://travis-ci.org/Maluuba/nlg-eval)
+
 # nlg-eval
 Evaluation code for various unsupervised automated metrics for NLG (Natural Language Generation).
 It takes as input a hypothesis file, and one or more references files and outputs values of metrics.

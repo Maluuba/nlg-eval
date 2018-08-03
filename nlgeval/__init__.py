@@ -2,12 +2,18 @@
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 from __future__ import print_function
 
+import six
 from six.moves import map
 
 from nlgeval.pycocoevalcap.bleu.bleu import Bleu
 from nlgeval.pycocoevalcap.cider.cider import Cider
 from nlgeval.pycocoevalcap.meteor.meteor import Meteor
 from nlgeval.pycocoevalcap.rouge.rouge import Rouge
+
+
+# str/unicode stripping in Python 2 and 3 instead of `str.strip`.
+def _strip(s):
+    return s.strip()
 
 
 def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=False, no_glove=False):
@@ -17,7 +23,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
     for iidx, reference in enumerate(references):
         with open(reference, 'r') as f:
             ref_list.append(f.readlines())
-    ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
+    ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
     refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
     hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
     assert len(refs) == len(hyps)
@@ -39,6 +45,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
             else:
                 print("%s: %0.6f" % (method, score))
                 ret_scores[method] = score
+        del scorers
 
     if not no_skipthoughts:
         from nlgeval.skipthoughts import skipthoughts
@@ -54,6 +61,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         cosine_similarity = np.max(cosine_similarity, axis=0).mean()
         print("SkipThoughtsCosineSimilairty: %0.6f" % (cosine_similarity))
         ret_scores['SkipThoughtCS'] = cosine_similarity
+        del model
 
     if not no_glove:
         from nlgeval.word2vec.evaluate import eval_emb_metrics
@@ -74,9 +82,9 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
 
 
 def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False, no_glove=False):
-    assert isinstance(hyp, str)
+    assert isinstance(hyp, six.string_types)
 
-    if isinstance(ref, str):
+    if isinstance(ref, six.string_types):
         ref = ref.split('||<|>||')  # special delimiter for backward compatibility
     ref = [a.strip() for a in ref]
     refs = {0: ref}
@@ -173,7 +181,7 @@ class NLGEval(object):
         self.glove_emb = Embedding()
 
     def compute_individual_metrics(self, ref, hyp):
-        assert isinstance(hyp, str)
+        assert isinstance(hyp, six.string_types)
         ref = [a.strip() for a in ref]
         refs = {0: ref}
         ref_list = [ref]
@@ -213,7 +221,7 @@ class NLGEval(object):
         return ret_scores
 
     def compute_metrics(self, ref_list, hyp_list):
-        ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
+        ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
         refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
         hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
         assert len(refs) == len(hyps)

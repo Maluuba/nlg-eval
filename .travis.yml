@@ -1,0 +1,22 @@
+dist: trusty
+# Set sudo to required so that we don't use a Docker container and don't run into Docker reporting incorrect memory available to old versions of Java.
+sudo: required
+language: python
+python:
+  - "3.6"
+  - "2.7"
+branches:
+  only:
+  - master
+before_install:
+  # Handle boto issues in Travis: https://github.com/travis-ci/travis-ci/issues/7940
+  - export BOTO_CONFIG=/dev/null
+  - export _JAVA_OPTIONS="-Xmx1G"
+  - type unzip || sudo apt-get install --yes unzip
+  - java -version || sudo apt-get install --yes default-jdk 
+install:
+  - pip install -U -e .
+  - pip install pytest
+  - ./setup.sh
+# Just run the main tests since running the rest causes memory issues on Travis.
+script: pytest --capture=no -k test_compute_metrics_oo
