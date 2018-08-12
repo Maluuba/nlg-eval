@@ -4,12 +4,10 @@ import os
 import stat
 import sys
 
-import requests
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
-from tqdm import tqdm
 
 try:
     from pip._internal.req import parse_requirements
@@ -18,6 +16,9 @@ except:
 
 
 def _download_file(d):
+    import requests
+    from tqdm import tqdm
+
     url, target_dir = d['url'], d['target_dir']
     filename = url[url.rfind('/') + 1:]
     target_path = os.path.join(target_dir, filename)
