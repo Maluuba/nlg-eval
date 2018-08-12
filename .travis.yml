@@ -17,6 +17,5 @@ before_install:
 install:
   - pip install -U -e .
   - pip install pytest
-  - ./setup.sh
 # Just run the main tests since running the rest causes memory issues on Travis.
 script: pytest --capture=no -k test_compute_metrics_oo

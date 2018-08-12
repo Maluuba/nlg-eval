@@ -18,9 +18,13 @@ def txt2bin(filename):
     KeyedVectors.load(filename.replace('txt', 'bin'), mmap='r')
 
 
-if __name__ == "__main__":
+def generate():
     path = os.path.join(os.path.dirname(__file__), "..", "data")
     glove_vector_file = os.path.join(path, 'glove.6B.300d.txt')
     output_model_file = os.path.join(path, 'glove.6B.300d.model.txt')
 
     txt2bin(glove2word2vec(glove_vector_file, output_model_file))
+
+
+if __name__ == "__main__":
+    generate()

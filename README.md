@@ -37,9 +37,6 @@ For the initial one-time setup, make sure java 1.8.0 is installed. After that ju
     # install the python dependencies
     pip install -e .
 
-    # download required data files
-    ./setup.sh
-
 ## Usage ##
 Once setup has completed, the metrics can be evaluated with a Python API or in the command line.
 

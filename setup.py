@@ -3,6 +3,7 @@
 import os
 import stat
 import sys
+from zipfile import ZipFile
 
 from setuptools import find_packages
 from setuptools import setup
@@ -60,12 +61,12 @@ def _post_setup():
 
     if sys.version_info[0] == 2:
         downloads.append(dict(
-            url='https://raw.githubusercontent.com/robmsmt/glove-gensim/dea5e55f449794567f12c79dc12b7f75339b18ba/glove2word2vec.py',
+            url='https://raw.githubusercontent.com/manasRK/glove-gensim/42ce46f00e83d3afa028fb6bf17ed3c90ca65fcc/glove2word2vec.py',
             target_dir='nlgeval/word2vec'
         ))
     else:
         downloads.append(dict(
-            url='https://raw.githubusercontent.com/manasRK/glove-gensim/42ce46f00e83d3afa028fb6bf17ed3c90ca65fcc/glove2word2vec.py',
+            url='https://raw.githubusercontent.com/robmsmt/glove-gensim/dea5e55f449794567f12c79dc12b7f75339b18ba/glove2word2vec.py',
             target_dir='nlgeval/word2vec'
         ))
 
@@ -112,12 +113,23 @@ def _post_setup():
         target_dir='nlgeval/multibleu'
     ))
 
-    with Pool(len(downloads)) as pool:
-        pool.map(_download_file, downloads)
+    pool = Pool(len(downloads))
+    pool.map(_download_file, downloads)
+    pool.close()
+    pool.join()
 
     if setup_glove:
-        # TODO
-        pass
+        from nlgeval.word2vec.generate_w2v_files import generate
+        z = ZipFile(os.path.join(data_path, 'glove.6B.zip'))
+        z.extract('glove.6B.300d.txt', data_path)
+        generate()
+        for p in [
+            os.path.join(data_path, 'glove.6B.zip'),
+            os.path.join(data_path, 'glove.6B.300d.txt'),
+            os.path.join(data_path, 'glove.6B.300d.model.txt'),
+        ]:
+            if os.path.exists(p):
+                os.remove(p)
 
     path = 'nlgeval/multibleu/multi-bleu.perl'
     stats = os.stat(path)
