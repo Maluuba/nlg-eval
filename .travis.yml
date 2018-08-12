@@ -16,7 +16,7 @@ before_install:
   - java -version || sudo apt-get install --yes default-jdk 
 install:
   # Run with verbose so that Travis doesn't give up.
-  - pip install -U -e -v .
+  - pip install -U -e . -v
   - pip install pytest
 # Just run the main tests since running the rest causes memory issues on Travis.
 script: pytest --capture=no -k test_compute_metrics_oo
