@@ -50,10 +50,10 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         vector_hyps = encoder.encode([h.strip() for h in hyp_list], verbose=False)
         ref_list_T = np.array(ref_list).T.tolist()
         vector_refs = map(lambda refl: encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-        cosine_similarity = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
-        cosine_similarity = np.max(cosine_similarity, axis=0).mean()
-        print("SkipThoughtsCosineSimilairty: %0.6f" % (cosine_similarity))
-        ret_scores['SkipThoughtCS'] = cosine_similarity
+        cos_sim = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
+        cos_sim = np.max(cos_sim, axis=0).mean()
+        print("SkipThoughtsCosineSimilairty: %0.6f" % (cos_sim))
+        ret_scores['SkipThoughtCS'] = cos_sim
 
     if not no_glove:
         from .word2vec.evaluate import eval_emb_metrics
@@ -111,9 +111,9 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
         vector_hyps = encoder.encode([h.strip() for h in hyp_list], verbose=False)
         ref_list_T = np.array(ref_list).T.tolist()
         vector_refs = map(lambda refl: encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-        cosine_similarity = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
-        cosine_similarity = np.max(cosine_similarity, axis=0).mean()
-        ret_scores['SkipThoughtCS'] = cosine_similarity
+        cos_sim = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
+        cos_sim = np.max(cos_sim, axis=0).mean()
+        ret_scores['SkipThoughtCS'] = cos_sim
 
     if not no_glove:
         from .word2vec.evaluate import eval_emb_metrics
@@ -133,6 +133,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
 
 
 class NLGEval(object):
+
     def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False):
         self.no_overlap = no_overlap
         if not no_overlap:
@@ -209,6 +210,25 @@ class NLGEval(object):
                 name, value = score.split(':')
                 value = float(value.strip())
                 ret_scores[name] = value
+
+        return ret_scores
+
+    def compute_specifc_metric(self, ref_list, hyp_list, metric):
+        ref_list = [list(map(str.strip, refs)) for refs in zip(*ref_list)]
+        refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
+        hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
+        assert len(refs) == len(hyps)
+
+        ret_scores = {}
+        if not self.no_overlap:
+            for scorer, method in self.scorers:
+                if method == metric:
+                    score, scores = scorer.compute_score(refs, hyps)
+                    if isinstance(method, list):
+                        for sc, scs, m in zip(score, scores, method):
+                            ret_scores[m] = sc
+                    else:
+                        ret_scores[method] = score
 
         return ret_scores
 
