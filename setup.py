@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import logging
 import os
 import stat
 import sys
+import time
 from zipfile import ZipFile
 
 from setuptools import find_packages
@@ -26,24 +28,38 @@ def _download_file(d):
     if not os.path.exists(target_path):
         # Collect data 1MB at a time.
         chunk_size = 1 * 1024 * 1024
-        print("Downloading {} to {}.".format(url, target_dir))
         if not os.path.exists(target_dir):
             os.makedirs(target_dir)
-        r = requests.get(url, stream=True)
-        r.raise_for_status()
 
-        total = None
-        length = r.headers.get('Content-length')
-        if length is not None:
-            total = int(length) // chunk_size + 1
+        num_attempts = 3
 
-        with open(target_path, 'wb') as f:
-            for chunk in tqdm(r.iter_content(chunk_size=chunk_size),
-                              desc="{}".format(filename),
-                              total=total,
-                              unit_scale=True, mininterval=15, unit=" chunks"):
-                sys.stdout.flush()
-                f.write(chunk)
+        for attempt_num in range(num_attempts):
+            try:
+                print("Downloading {} to {}.".format(url, target_dir))
+                r = requests.get(url, stream=True)
+                r.raise_for_status()
+
+                total = None
+                length = r.headers.get('Content-length')
+                if length is not None:
+                    total = int(length) // chunk_size + 1
+
+                with open(target_path, 'wb') as f:
+                    for chunk in tqdm(r.iter_content(chunk_size=chunk_size),
+                                      desc="{}".format(filename),
+                                      total=total,
+                                      unit_scale=True, mininterval=15, unit=" chunks"):
+                        sys.stdout.flush()
+                        f.write(chunk)
+                break
+            except:
+                if attempt_num < num_attempts - 1:
+                    wait_s = 1 * 60
+                    logging.exception("Error downloading file, will retry in %ds.", wait_s)
+                    # Wait and try to download later.
+                    time.sleep(wait_s)
+                else:
+                    raise
 
 
 def _post_setup():
@@ -113,7 +129,8 @@ def _post_setup():
         target_dir='nlgeval/multibleu'
     ))
 
-    pool = Pool(len(downloads))
+    # Limit the number of threads so that we don't download too much from the same source concurrently.
+    pool = Pool(min(4, len(downloads)))
     pool.map(_download_file, downloads)
     pool.close()
     pool.join()
