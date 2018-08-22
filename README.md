@@ -35,7 +35,11 @@ Python 2.7 has also been tested with mostly the same dependencies but an older v
 Install Java 1.8.0 (or higher).
 Then run:
     
+    # Install the Python dependencies.
     pip install -e .
+
+    # Download required data files.
+    nlg-eval --setup
 
 It may take awhile to run because it's downloading some files. You can run that command with `-v` to see more details.
 
