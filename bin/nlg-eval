@@ -25,8 +25,6 @@ def _download_file(d):
     if not os.path.exists(target_path):
         # Collect data 1MB at a time.
         chunk_size = 1 * 1024 * 1024
-        if not os.path.exists(target_dir):
-            os.makedirs(target_dir)
 
         num_attempts = 3
 
@@ -125,6 +123,10 @@ def setup(ctx, param, value):
         url='https://raw.githubusercontent.com/moses-smt/mosesdecoder/b199e654df2a26ea58f234cbb642e89d9c1f269d/scripts/generic/multi-bleu.perl',
         target_dir='nlgeval/multibleu'
     ))
+
+    for target_dir in {d['target_dir'] for d in downloads}:
+        if not os.path.exists(target_dir):
+            os.makedirs(target_dir)
 
     # Limit the number of threads so that we don't download too much from the same source concurrently.
     pool = Pool(min(4, len(downloads)))
