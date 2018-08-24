@@ -36,12 +36,11 @@ Install Java 1.8.0 (or higher).
 Then run:
     
     # Install the Python dependencies.
+    # It may take a while to run because it's downloading some files. You can instead run `pip install -v -e .` to see more details.
     pip install -e .
 
     # Download required data files.
     nlg-eval --setup
-
-It may take awhile to run because it's downloading some files. You can run that command with `-v` to see more details.
 
 ## Usage ##
 Once setup has completed, the metrics can be evaluated with a Python API or in the command line.
