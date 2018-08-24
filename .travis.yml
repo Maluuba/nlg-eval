@@ -16,7 +16,7 @@ before_install:
   - java -version || sudo apt-get install --yes default-jdk 
 install:
   - pip install -U -e .
+  - nlg-eval --setup
   - pip install pytest
-  - ./setup.sh
 # Just run the main tests since running the rest causes memory issues on Travis.
 script: pytest --capture=no -k test_compute_metrics_oo

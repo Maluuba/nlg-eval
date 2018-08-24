@@ -17,7 +17,7 @@ Rows across these files should correspond to the same example.
 
 ## Requirements ##
 Tested using
-- java 1.8.0
+- Java 1.8.0
 - python 3.6
   - click 6.7
   - nltk 3.3
@@ -32,13 +32,15 @@ Python 2.7 has also been tested with mostly the same dependencies but an older v
 
 ## Setup ##
 
-For the initial one-time setup, make sure java 1.8.0 is installed. After that just run:
+Install Java 1.8.0 (or higher).
+Then run:
     
-    # install the python dependencies
+    # Install the Python dependencies.
+    # It may take a while to run because it's downloading some files. You can instead run `pip install -v -e .` to see more details.
     pip install -e .
 
-    # download required data files
-    ./setup.sh
+    # Download required data files.
+    nlg-eval --setup
 
 ## Usage ##
 Once setup has completed, the metrics can be evaluated with a Python API or in the command line.
