@@ -85,6 +85,22 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(1.0, scores['GreedyMatchingScore'], places=3)
         self.assertEqual(11, len(scores))
 
+    def test_compute_metrics_omit(self):
+        n = NLGEval(metrics_to_omit=['Bleu_3', 'METEOR', 'EmbeddingAverageCosineSimilairty'])
+
+        # Individual Metrics
+        scores = n.compute_individual_metrics(ref=["this is a test",
+                                                   "this is also a test"],
+                                              hyp="this is a good test")
+        self.assertAlmostEqual(0.799999, scores['Bleu_1'], places=5)
+        self.assertAlmostEqual(0.632455, scores['Bleu_2'], places=5)
+        self.assertAlmostEqual(0.9070631, scores['ROUGE_L'], places=5)
+        self.assertAlmostEqual(0.0, scores['CIDEr'], places=5)
+        self.assertAlmostEqual(0.8375251, scores['SkipThoughtCS'], places=5)
+        self.assertAlmostEqual(0.94509, scores['VectorExtremaCosineSimilarity'], places=5)
+        self.assertAlmostEqual(0.960771, scores['GreedyMatchingScore'], places=5)
+        self.assertEqual(7, len(scores))
+
     def test_compute_metrics(self):
         # The example from the README.
         root_dir = os.path.join(os.path.dirname(__file__), '..', '..')

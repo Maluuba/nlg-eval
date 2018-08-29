@@ -141,26 +141,80 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
 
 
 class NLGEval(object):
-    def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False):
+    glove_metrics = {
+        'EmbeddingAverageCosineSimilairty',
+        'VectorExtremaCosineSimilarity',
+        'GreedyMatchingScore',
+    }
+
+    valid_metrics = {
+                        # Overlap
+                        'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4',
+                        'METEOR',
+                        'ROUGE_L',
+                        'CIDEr',
+
+                        # Skip-thought
+                        'SkipThoughtCS',
+                    } | glove_metrics
+
+    def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False,
+                 metrics_to_omit=None):
+        """
+        :param no_overlap: Default: Use overlap metrics.
+            `True` if these metrics should not be used.
+        :type no_overlap: bool
+        :param no_skipthoughts: Default: Use the skip-thoughts metric.
+            `True` if this metrics should not be used.
+        :type no_skipthoughts: bool
+        :param no_glove: Default: Use GloVe based metrics.
+            `True` if these metrics should not be used.
+        :type no_glove: bool
+        :param metrics_to_omit: Default: Use all metrics. See `NLGEval.valid_metrics` for all metrics.
+            The previous parameters will override metrics in this one if they are set.
+            Metrics to omit. Omitting Bleu_{i} will omit Bleu_{j} for j>=i.
+        :type metrics_to_omit: Optional[Collection[str]]
+        """
+
+        if metrics_to_omit is None:
+            self.metrics_to_omit = set()
+        else:
+            self.metrics_to_omit = set(metrics_to_omit)
+        assert len(self.metrics_to_omit - self.valid_metrics) == 0, \
+            "Invalid metrics to omit: {}".format(self.metrics_to_omit - self.valid_metrics)
+
         self.no_overlap = no_overlap
         if not no_overlap:
             self.load_scorers()
 
-        self.no_skipthoughts = no_skipthoughts
+        self.no_skipthoughts = no_skipthoughts or 'SkipThoughtCS' in self.metrics_to_omit
         if not self.no_skipthoughts:
             self.load_skipthought_model()
 
-        self.no_glove = no_glove
+        self.no_glove = no_glove or len(self.glove_metrics - self.metrics_to_omit) == 0
         if not self.no_glove:
             self.load_glove()
 
     def load_scorers(self):
-        self.scorers = [
-            (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
-            (Meteor(), "METEOR"),
-            (Rouge(), "ROUGE_L"),
-            (Cider(), "CIDEr")
-        ]
+        self.scorers = []
+
+        omit_bleu_i = False
+        for i in range(1, 4 + 1):
+            if 'Bleu_{}'.format(i) in self.metrics_to_omit:
+                omit_bleu_i = True
+                if i > 1:
+                    self.scorers.append((Bleu(i - 1), ['Bleu_{}'.format(j) for j in range(1, i)]))
+                break
+        if not omit_bleu_i:
+            self.scorers.append((Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]))
+
+        if 'METEOR' not in self.metrics_to_omit:
+            self.scorers.append((Meteor(), "METEOR"))
+        if 'ROUGE_L' not in self.metrics_to_omit:
+            self.scorers.append((Rouge(), "ROUGE_L"))
+        if 'CIDEr' not in self.metrics_to_omit:
+            self.scorers.append((Cider(), "CIDEr"))
+
 
     def load_skipthought_model(self):
         from nlgeval.skipthoughts import skipthoughts
@@ -211,7 +265,8 @@ class NLGEval(object):
             glove_hyps = [h.strip() for h in hyp_list]
             ref_list_T = self.np.array(ref_list).T.tolist()
             glove_refs = map(lambda refl: [r.strip() for r in refl], ref_list_T)
-            scores = self.eval_emb_metrics(glove_hyps, glove_refs, emb=self.glove_emb)
+            scores = self.eval_emb_metrics(glove_hyps, glove_refs, emb=self.glove_emb,
+                                           metrics_to_omit=self.metrics_to_omit)
             scores = scores.split('\n')
             for score in scores:
                 name, value = score.split(':')

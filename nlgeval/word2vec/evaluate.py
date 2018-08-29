@@ -38,12 +38,15 @@ class Embedding(object):
             return self.unk
 
 
-def eval_emb_metrics(hypothesis, references, emb=None):
+def eval_emb_metrics(hypothesis, references, emb=None, metrics_to_omit=None):
     from sklearn.metrics.pairwise import cosine_similarity
     from nltk.tokenize import word_tokenize
     import numpy as np
     if emb is None:
         emb = Embedding()
+
+    if metrics_to_omit is None:
+        metrics_to_omit = set()
 
     emb_hyps = []
     avg_emb_hyps = []
@@ -86,27 +89,31 @@ def eval_emb_metrics(hypothesis, references, emb=None):
         avg_emb_refs.append(avg_emb_refsource)
         extreme_emb_refs.append(extreme_emb_refsource)
 
-    cos_similarity = list(map(lambda refv: cosine_similarity(refv, avg_emb_hyps).diagonal(), avg_emb_refs))
-    cos_similarity = np.max(cos_similarity, axis=0).mean()
-    average = "EmbeddingAverageCosineSimilairty: %0.6f" % (cos_similarity)
+    rval = []
+    if 'EmbeddingAverageCosineSimilairty' not in metrics_to_omit:
+        cos_similarity = list(map(lambda refv: cosine_similarity(refv, avg_emb_hyps).diagonal(), avg_emb_refs))
+        cos_similarity = np.max(cos_similarity, axis=0).mean()
+        rval.append("EmbeddingAverageCosineSimilairty: %0.6f" % (cos_similarity))
 
-    cos_similarity = list(map(lambda refv: cosine_similarity(refv, extreme_emb_hyps).diagonal(), extreme_emb_refs))
-    cos_similarity = np.max(cos_similarity, axis=0).mean()
-    extrema = "VectorExtremaCosineSimilarity: %0.6f" % (cos_similarity)
+    if 'VectorExtremaCosineSimilarity' not in metrics_to_omit:
+        cos_similarity = list(map(lambda refv: cosine_similarity(refv, extreme_emb_hyps).diagonal(), extreme_emb_refs))
+        cos_similarity = np.max(cos_similarity, axis=0).mean()
+        rval.append("VectorExtremaCosineSimilarity: %0.6f" % (cos_similarity))
 
-    scores = []
-    for emb_refsource in emb_refs:
-        score_source = []
-        for emb_ref, emb_hyp in zip(emb_refsource, emb_hyps):
-            simi_matrix = cosine_similarity(emb_ref, emb_hyp)
-            dir1 = simi_matrix.max(axis=0).mean()
-            dir2 = simi_matrix.max(axis=1).mean()
-            score_source.append((dir1+dir2)/2)
-        scores.append(score_source)
-    scores = np.max(scores, axis=0).mean()
-    greedy = "GreedyMatchingScore: %0.6f" % (scores)
+    if 'GreedyMatchingScore' not in metrics_to_omit:
+        scores = []
+        for emb_refsource in emb_refs:
+            score_source = []
+            for emb_ref, emb_hyp in zip(emb_refsource, emb_hyps):
+                simi_matrix = cosine_similarity(emb_ref, emb_hyp)
+                dir1 = simi_matrix.max(axis=0).mean()
+                dir2 = simi_matrix.max(axis=1).mean()
+                score_source.append((dir1 + dir2) / 2)
+            scores.append(score_source)
+        scores = np.max(scores, axis=0).mean()
+        rval.append("GreedyMatchingScore: %0.6f" % (scores))
 
-    rval = "\n".join([average, extrema, greedy])
+    rval = "\n".join(rval)
     return rval
 
 
