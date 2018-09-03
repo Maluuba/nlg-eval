@@ -34,13 +34,15 @@ Python 2.7 has also been tested with mostly the same dependencies but an older v
 
 Install Java 1.8.0 (or higher).
 Then run:
-    
-    # Install the Python dependencies.
-    # It may take a while to run because it's downloading some files. You can instead run `pip install -v -e .` to see more details.
-    pip install -e .
 
-    # Download required data files.
-    nlg-eval --setup
+```bash
+# Install the Python dependencies.
+# It may take a while to run because it's downloading some files. You can instead run `pip install -v -e .` to see more details.
+pip install -e .
+
+# Download required data files.
+nlg-eval --setup
+```
 
 ## Usage ##
 Once setup has completed, the metrics can be evaluated with a Python API or in the command line.
@@ -57,32 +59,40 @@ corresponding hypothesis.
 
 ### functional API: for the entire corpus ###
 
-    from nlgeval import compute_metrics
-    metrics_dict = compute_metrics(hypothesis='examples/hyp.txt',
-                                   references=['examples/ref1.txt', 'examples/ref2.txt'])
+```python
+from nlgeval import compute_metrics
+metrics_dict = compute_metrics(hypothesis='examples/hyp.txt',
+			   references=['examples/ref1.txt', 'examples/ref2.txt'])
+```
 
 ### functional API: for only one sentence ###
 
-    from nlgeval import compute_individual_metrics
-    metrics_dict = compute_individual_metrics(references, hypothesis)
+```python
+from nlgeval import compute_individual_metrics
+metrics_dict = compute_individual_metrics(references, hypothesis)
+```
 
 where `references` is a list of ground truth reference text strings and
 `hypothesis` is the hypothesis text string.
 
 ### object oriented API for repeated calls in a script - single example ###
 
-    from nlgeval import NLGEval
-    nlgeval = NLGEval()  # loads the models
-    metrics_dict = nlgeval.compute_individual_metrics(references, hypothesis)
+```python
+from nlgeval import NLGEval
+nlgeval = NLGEval()  # loads the models
+metrics_dict = nlgeval.compute_individual_metrics(references, hypothesis)
+```
 
 where `references` is a list of ground truth reference text strings and
 `hypothesis` is the hypothesis text string.
 
 ### object oriented API for repeated calls in a script - multiple examples ###
 
-    from nlgeval import NLGEval
-    nlgeval = NLGEval()  # loads the models
-    metrics_dict = nlgeval.compute_metrics(references, hypothesis)
+```python
+from nlgeval import NLGEval
+nlgeval = NLGEval()  # loads the models
+metrics_dict = nlgeval.compute_metrics(references, hypothesis)
+```
 
 where `references` is a list of lists of ground truth reference text strings and
 `hypothesis` is a list of hypothesis text strings. Each inner list in `references`
@@ -96,14 +106,16 @@ Shikhar Sharma, Layla El Asri, Hannes Schulz, and Jeremie Zumer.
 **"Relevance of Unsupervised Metrics in Task-Oriented Dialogue for Evaluating Natural Language Generation"**
 *arXiv preprint arXiv:1706.09799* (2017)
 
-    @article{sharma2017nlgeval,
-      author  = {Sharma, Shikhar and El Asri, Layla and Schulz, Hannes and Zumer, Jeremie},
-      title   = {Relevance of Unsupervised Metrics in Task-Oriented Dialogue for Evaluating Natural Language Generation},
-      journal = {CoRR},
-      volume  = {abs/1706.09799},
-      year    = {2017},
-      url     = {http://arxiv.org/abs/1706.09799}
-    }
+```bibtex
+@article{sharma2017nlgeval,
+    author  = {Sharma, Shikhar and El Asri, Layla and Schulz, Hannes and Zumer, Jeremie},
+    title   = {Relevance of Unsupervised Metrics in Task-Oriented Dialogue for Evaluating Natural Language Generation},
+    journal = {CoRR},
+    volume  = {abs/1706.09799},
+    year    = {2017},
+    url     = {http://arxiv.org/abs/1706.09799}
+}
+```
 
 ## Example ##
 Running
