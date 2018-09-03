@@ -3,6 +3,7 @@
 # Python wrapper for METEOR implementation, by Xinlei Chen
 # Acknowledge Michael Denkowski for the generous discussion and help 
 
+import atexit
 import sys
 import os
 import subprocess
@@ -35,6 +36,16 @@ class Meteor:
                                          stdin=subprocess.PIPE,
                                          stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE)
+
+        atexit.register(self.close)
+
+    def close(self):
+        with self.lock:
+            if self.meteor_p:
+                self.meteor_p.kill()
+                self.meteor_p.wait()
+                self.meteor_p = None
+
 
     def compute_score(self, gts, res):
         assert (gts.keys() == res.keys())
@@ -87,7 +98,4 @@ class Meteor:
         return score
 
     def __del__(self):
-        with self.lock:
-            self.meteor_p.stdin.close()
-            self.meteor_p.kill()
-            self.meteor_p.wait()
+        self.close()
