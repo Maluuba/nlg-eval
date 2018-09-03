@@ -45,7 +45,10 @@ class Meteor:
                 self.meteor_p.kill()
                 self.meteor_p.wait()
                 self.meteor_p = None
-
+        # if the user calls close() manually, remove the
+        # reference from atexit so the object can be garbage-collected.
+        if atexit is not None and atexit.unregister is not None:
+            atexit.unregister(self.close)
 
     def compute_score(self, gts, res):
         assert (gts.keys() == res.keys())
