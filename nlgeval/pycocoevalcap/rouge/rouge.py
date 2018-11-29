@@ -87,8 +87,8 @@ class Rouge():
 
         score = []
         for id in imgIds:
-            hypo = res[id]
-            ref  = gts[id]
+            hypo = gts[id]
+            ref  = res[id]
 
             score.append(self.calc_score(hypo, ref))
 

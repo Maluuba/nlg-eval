@@ -25,8 +25,8 @@ class Bleu:
 
         bleu_scorer = BleuScorer(n=self._n)
         for id in imgIds:
-            hypo = res[id]
-            ref = gts[id]
+            hypo = gts[id]
+            ref = res[id]
 
             # Sanity check.
             assert(type(hypo) is list)

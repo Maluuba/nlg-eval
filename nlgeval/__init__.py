@@ -37,7 +37,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
-            score, scores = scorer.compute_score(refs, hyps)
+            score, scores = scorer.compute_score(hyps, refs)
             if isinstance(method, list):
                 for sc, scs, m in zip(score, scores, method):
                     print("%s: %0.6f" % (m, sc))
@@ -102,7 +102,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
-            score, scores = scorer.compute_score(refs, hyps)
+            score, scores = scorer.compute_score(hyps, refs)
             if isinstance(method, list):
                 for sc, scs, m in zip(score, scores, method):
                     ret_scores[m] = sc
@@ -246,7 +246,7 @@ class NLGEval(object):
         ret_scores = {}
         if not self.no_overlap:
             for scorer, method in self.scorers:
-                score, scores = scorer.compute_score(refs, hyps)
+                score, scores = scorer.compute_score(hyps, refs)
                 if isinstance(method, list):
                     for sc, scs, m in zip(score, scores, method):
                         ret_scores[m] = sc
@@ -284,7 +284,7 @@ class NLGEval(object):
         ret_scores = {}
         if not self.no_overlap:
             for scorer, method in self.scorers:
-                score, scores = scorer.compute_score(refs, hyps)
+                score, scores = scorer.compute_score(hyps, refs)
                 if isinstance(method, list):
                     for sc, scs, m in zip(score, scores, method):
                         ret_scores[m] = sc
