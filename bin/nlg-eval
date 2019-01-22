@@ -136,9 +136,8 @@ def setup(ctx, param, value):
 
     if setup_glove:
         from nlgeval.word2vec.generate_w2v_files import generate
-        z = ZipFile(os.path.join(data_path, 'glove.6B.zip'))
-        z.extract('glove.6B.300d.txt', data_path)
-        z.close()
+        with ZipFile(os.path.join(data_path, 'glove.6B.zip')) as z:
+            z.extract('glove.6B.300d.txt', data_path)
         generate()
         for p in [
             os.path.join(data_path, 'glove.6B.zip'),
