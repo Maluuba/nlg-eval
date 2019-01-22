@@ -138,6 +138,7 @@ def setup(ctx, param, value):
         from nlgeval.word2vec.generate_w2v_files import generate
         z = ZipFile(os.path.join(data_path, 'glove.6B.zip'))
         z.extract('glove.6B.300d.txt', data_path)
+        z.close()
         generate()
         for p in [
             os.path.join(data_path, 'glove.6B.zip'),
