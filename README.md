@@ -40,6 +40,9 @@ Then run:
 # It may take a while to run because it's downloading some files. You can instead run `pip install -v -e .` to see more details.
 pip install -e .
 
+# If using macOS High Sierra or higher, run this before run setup, to allow multithreading
+# export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
 # Download required data files.
 nlg-eval --setup
 ```
