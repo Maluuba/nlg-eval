@@ -63,7 +63,6 @@ def setup(ctx, param, value):
     from multiprocessing import Pool
 
     data_path = os.getenv('NLGEVAL_DATA', 'nlgeval/data')
-
     path = 'nlgeval/word2vec/glove2word2vec.py'
     if os.path.exists(path):
         os.remove('nlgeval/word2vec/glove2word2vec.py')
@@ -76,8 +75,9 @@ def setup(ctx, param, value):
             target_dir='nlgeval/word2vec'
         ))
     else:
+        # Change URL once https://github.com/robmsmt/glove-gensim/pull/1 has been merged.
         downloads.append(dict(
-            url='https://raw.githubusercontent.com/robmsmt/glove-gensim/dea5e55f449794567f12c79dc12b7f75339b18ba/glove2word2vec.py',
+            url='https://raw.githubusercontent.com/juharris/glove-gensim/4c2224bccd61627b76c50a5e1d6afd1c82699d22/glove2word2vec.py',
             target_dir='nlgeval/word2vec'
         ))
 
@@ -136,8 +136,8 @@ def setup(ctx, param, value):
 
     if setup_glove:
         from nlgeval.word2vec.generate_w2v_files import generate
-        z = ZipFile(os.path.join(data_path, 'glove.6B.zip'))
-        z.extract('glove.6B.300d.txt', data_path)
+        with ZipFile(os.path.join(data_path, 'glove.6B.zip')) as z:
+            z.extract('glove.6B.300d.txt', data_path)
         generate()
         for p in [
             os.path.join(data_path, 'glove.6B.zip'),
