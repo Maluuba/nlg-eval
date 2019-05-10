@@ -158,7 +158,6 @@ where to find its models and data.  E.g.
 
     NLGEVAL_DATA=~/workspace/nlg-eval/nlgeval/data
 
-
 ## Microsoft Open Source Code of Conduct ##
 This project has adopted the [Microsoft Open Source Code of
 Conduct](https://opensource.microsoft.com/codeofconduct/).
