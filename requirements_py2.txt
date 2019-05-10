@@ -5,7 +5,7 @@ psutil>=5.6.2
 requests>=2.19
 six>=1.11
 scipy>=0.17.0
-scikit-learn>=0.17
+scikit-learn<0.21
 gensim<1
 Theano>=0.8.1
 tqdm>=4.24
