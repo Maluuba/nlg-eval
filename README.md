@@ -139,6 +139,9 @@ gives
     VectorExtremaCosineSimilarity: 0.568696
     GreedyMatchingScore: 0.784205
 
+## Troubleshooting
+If you have issues with Meteor then you can try lowering the `mem` variable in meteor.py
+
 ## Important Note ##
 CIDEr by default (with idf parameter set to "corpus" mode) computes IDF values using the reference sentences provided. Thus,
 CIDEr score for a reference dataset with only 1 image (or example for NLG) will be zero. When evaluating using one (or few)
@@ -154,6 +157,7 @@ users, you can set the `NLGEVAL_DATA` environment variable to let nlg-eval know
 where to find its models and data.  E.g.
 
     NLGEVAL_DATA=~/workspace/nlg-eval/nlgeval/data
+
 
 ## Microsoft Open Source Code of Conduct ##
 This project has adopted the [Microsoft Open Source Code of
