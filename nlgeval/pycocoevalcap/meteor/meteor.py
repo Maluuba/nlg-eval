@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 
 # Python wrapper for METEOR implementation, by Xinlei Chen
-# Acknowledge Michael Denkowski for the generous discussion and help 
+# Acknowledge Michael Denkowski for the generous discussion and help
+from __future__ import division
 
 import atexit
-import sys
+import logging
 import os
 import subprocess
+import sys
 import threading
+
+import psutil
 
 # Assumes meteor-1.5.jar is in the same directory as meteor.py.  Change as needed.
 METEOR_JAR = 'meteor-1.5.jar'
@@ -15,6 +19,7 @@ METEOR_JAR = 'meteor-1.5.jar'
 
 def enc(s):
     return s.encode('utf-8')
+
 
 def dec(s):
     return s.decode('utf-8')
@@ -26,7 +31,16 @@ class Meteor:
         # Used to guarantee thread safety
         self.lock = threading.Lock()
 
-        meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR,
+        mem = '2G'
+        mem_available_G = psutil.virtual_memory().available / 1E9
+        if mem_available_G < 2:
+            logging.warning("There is less than 2GB of available memory.\n"
+                            "Will try with limiting Meteor to 1GB of memory but this might cause issues.\n"
+                            "If you have problems using Meteor, "
+                            "then you can try to lower the `mem` variable in meteor.py")
+            mem = '1G'
+
+        meteor_cmd = ['java', '-jar', '-Xmx{}'.format(mem), METEOR_JAR,
                       '-', '-', '-stdio', '-l', 'en', '-norm']
         env = os.environ.copy()
         env['LC_ALL'] = "C"
@@ -65,7 +79,17 @@ class Meteor:
             self.meteor_p.stdin.write(enc('{}\n'.format(eval_line)))
             self.meteor_p.stdin.flush()
             for i in range(0, len(imgIds)):
-                scores.append(float(dec(self.meteor_p.stdout.readline().strip())))
+                v = self.meteor_p.stdout.readline()
+                try:
+                    scores.append(float(dec(v.strip())))
+                except:
+                    sys.stderr.write("Error handling value: {}\n".format(v))
+                    sys.stderr.write("Decoded value: {}\n".format(dec(v.strip())))
+                    sys.stderr.write("eval_line: {}\n".format(eval_line))
+                    # You can try uncommenting the next code line to show stderr from the Meteor JAR.
+                    # If the Meteor JAR is not writing to stderr, then the line will just hang.
+                    # sys.stderr.write("Error from Meteor:\n{}".format(self.meteor_p.stderr.read()))
+                    raise
             score = float(dec(self.meteor_p.stdout.readline()).strip())
 
         return score, scores
