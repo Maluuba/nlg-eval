@@ -276,9 +276,12 @@ class NLGEval(object):
         return ret_scores
 
     def compute_metrics(self, ref_list, hyp_list):
-        ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
+        
         refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
         hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
+
+        ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
+        
         assert len(refs) == len(hyps)
 
         ret_scores = {}
