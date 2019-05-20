@@ -280,7 +280,7 @@ class NLGEval(object):
         refs = {idx: strippedlines for (idx, strippedlines) in enumerate(ref_list)}
         hyps = {idx: [lines.strip()] for (idx, lines) in enumerate(hyp_list)}
 
-        ref_list = [list(map(_strip, refs)) for refs in zip(*ref_list)]
+        ref_list = [list(map(_strip, ref)) for ref in zip(*ref_list)]
         
         assert len(refs) == len(hyps)
 
