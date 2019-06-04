@@ -33,7 +33,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         scorers = [
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
-            (Rouge(), "ROUGE_L"),
+            (Rouge(2), ["ROUGE_1", "ROUGE_2", "ROUGE_L"]),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
