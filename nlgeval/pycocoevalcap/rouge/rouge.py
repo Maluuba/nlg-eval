@@ -7,99 +7,144 @@
 # Creation Date : 2015-01-07 06:03
 # Author : Ramakrishna Vedantam <vrama91@vt.edu>
 
-import numpy as np
-import pdb
+from pyrouge import Rouge155
+import shutil
 
-def my_lcs(string, sub):
-    """
-    Calculates longest common subsequence for a pair of tokenized strings
-    :param string : list of str : tokens from a string split using whitespace
-    :param sub : list of str : shorter string, also split using whitespace
-    :returns: length (list of int): length of the longest common subsequence between the two strings
+import logging
+import os
 
-    Note: my_lcs only gives length of the longest common subsequence, not the actual LCS
-    """
-    if(len(string)< len(sub)):
-        sub, string = string, sub
-
-    lengths = [[0 for i in range(0,len(sub)+1)] for j in range(0,len(string)+1)]
-
-    for j in range(1,len(sub)+1):
-        for i in range(1,len(string)+1):
-            if(string[i-1] == sub[j-1]):
-                lengths[i][j] = lengths[i-1][j-1] + 1
-            else:
-                lengths[i][j] = max(lengths[i-1][j] , lengths[i][j-1])
-
-    return lengths[len(string)][len(sub)]
+__cur_path = os.path.dirname(os.path.realpath(__file__))
+OFFICIAL_PATH = os.path.join(__cur_path, "official_rouge/")
+MODEL_PATH = os.path.join(__cur_path, "tmp/model/")
+GOLD_PATH = os.path.join(__cur_path, "tmp/gold/")
 
 class Rouge():
     '''
-    Class for computing ROUGE-L score for a set of candidate sentences for the MS COCO test set
+    Class for computing ROUGE scores for a set of candidate sentences for the MS COCO test set
 
     '''
-    def __init__(self):
-        # vrama91: updated the value below based on discussion with Hovey
-        self.beta = 1.2
+    def __init__(self, score_type="f_score", rouge_dir=OFFICIAL_PATH, model_tmp=MODEL_PATH, gold_tmp=GOLD_PATH):
+        self.rouge155 = Rouge155(rouge_dir, log_level=logging.ERROR)
+        self.model_tmp = model_tmp
+        self.gold_tmp = gold_tmp
+
+        # Setup rouge155
+        self.rouge155.system_dir = self.model_tmp
+        self.rouge155.model_dir = self.gold_tmp
+        self.rouge155.system_filename_pattern = "rouge.(\d+).txt"
+        self.rouge155.model_filename_pattern = "rouge.[A-Z].#ID#.txt"
+
+        # Score type to be returned
+        if score_type not in ['f_score', 'recall', 'precision']:
+            raise ValueError("Score type must be either 'f_score', 'precision', or 'recall'. Given : {}".format(score_type))
+        self.score_type = score_type
 
     def calc_score(self, candidate, refs):
         """
-        Compute ROUGE-L score given one candidate and references for an image
-        :param candidate: str : candidate sentence to be evaluated
-        :param refs: list of str : COCO reference sentences for the particular image to be evaluated
-        :returns score: int (ROUGE-L score for the candidate evaluated against references)
+        Compute ROUGE scores given one candidate and references.
+        :param candidate: list of 1 str : candidate sentence to be evaluated
+        :param refs: list of str : reference sentences to be evaluated
+        :returns recall, precision, f_score: list of float for recall, precision and f score
         """
         assert(len(candidate)==1)	
-        assert(len(refs)>0)         
-        prec = []
-        rec = []
+        assert(len(refs)>0)
 
-        # split into tokens
-        token_c = candidate[0].split(" ")
-    	
-        for reference in refs:
-            # split into tokens
-            token_r = reference.split(" ")
-            # compute the longest common subsequence
-            lcs = my_lcs(token_r, token_c)
-            prec.append(lcs/float(len(token_c)))
-            rec.append(lcs/float(len(token_r)))
+        # Write candidate and refs to temp dir for ROUGE155
+        with open(os.path.join(self.model_tmp, "rouge.001.txt"), 'w') as f:
+            f.write(candidate[0])
+        for i, r in enumerate(refs):
+            with open(os.path.join(self.gold_tmp, "rouge.{}.001.txt".format(chr(65 + i))), 'w') as f:
+                f.write(r)
 
-        prec_max = max(prec)
-        rec_max = max(rec)
+        # Run the official script
+        output = self.rouge155.convert_and_evaluate()
+        r = self.rouge155.output_to_dict(output)
 
-        if(prec_max!=0 and rec_max !=0):
-            score = ((1 + self.beta**2)*prec_max*rec_max)/float(rec_max + self.beta**2*prec_max)
-        else:
-            score = 0.0
-        return score
+        # Order it : Rouge N (1, 2, 3, 4), L, W, S*, SU*
+        recall = [r['rouge_1_recall'], r['rouge_2_recall'], r['rouge_3_recall'],
+                  r['rouge_4_recall'], r['rouge_l_recall'], r['rouge_w_1.2_recall'],
+                  r['rouge_s*_recall'], r['rouge_su*_recall']]
+        precision = [r['rouge_1_precision'], r['rouge_2_precision'], r['rouge_3_precision'],
+                  r['rouge_4_precision'], r['rouge_l_precision'], r['rouge_w_1.2_precision'],
+                  r['rouge_s*_precision'], r['rouge_su*_precision']]
+        f_score = [r['rouge_1_f_score'], r['rouge_2_f_score'], r['rouge_3_f_score'],
+                  r['rouge_4_f_score'], r['rouge_l_f_score'], r['rouge_w_1.2_f_score'],
+                  r['rouge_s*_f_score'], r['rouge_su*_f_score']]
+
+        # Once we got the score, don't forget to remove tmp files
+        shutil.rmtree(self.model_tmp) 
+        shutil.rmtree(self.gold_tmp) 
+        os.makedirs(self.model_tmp)
+        os.makedirs(self.gold_tmp)
+
+        return recall, precision, f_score
+
+    def calc_scores(self, gts, res, imgIds):
+        """
+        Compute ROUGE scores given one candidate and references.
+        :param candidate: list of 1 str : candidate sentence to be evaluated
+        :param refs: list of str : reference sentences to be evaluated
+        :returns recall, precision, f_score: list of float for recall, precision and f score
+        """
+        for j, idx in enumerate(imgIds):
+            candidate = res[idx]
+            refs  = gts[idx]
+
+            assert(len(candidate)==1)	
+            assert(len(refs)>0)
+
+            # Write candidate and refs to temp dir for ROUGE155
+            with open(os.path.join(self.model_tmp, "rouge.{}.txt".format(j + 1)), 'w', encoding='utf-8') as f:
+                f.write(candidate[0])
+            for i, r in enumerate(refs):
+                with open(os.path.join(self.gold_tmp, "rouge.{}.{}.txt".format(chr(65 + i), j + 1)), 'w', encoding='utf-8') as f:
+                    f.write(r + "\n")
+
+        # Run the official script
+        output = self.rouge155.convert_and_evaluate()
+        r = self.rouge155.output_to_dict(output)
+
+        # Order it : Rouge N (1, 2, 3, 4), L, W, S*, SU*
+        recall = [r['rouge_1_recall'], r['rouge_2_recall'], r['rouge_3_recall'],
+                  r['rouge_4_recall'], r['rouge_l_recall'], r['rouge_w_1.2_recall'],
+                  r['rouge_s*_recall'], r['rouge_su*_recall']]
+        precision = [r['rouge_1_precision'], r['rouge_2_precision'], r['rouge_3_precision'],
+                  r['rouge_4_precision'], r['rouge_l_precision'], r['rouge_w_1.2_precision'],
+                  r['rouge_s*_precision'], r['rouge_su*_precision']]
+        f_score = [r['rouge_1_f_score'], r['rouge_2_f_score'], r['rouge_3_f_score'],
+                  r['rouge_4_f_score'], r['rouge_l_f_score'], r['rouge_w_1.2_f_score'],
+                  r['rouge_s*_f_score'], r['rouge_su*_f_score']]
+
+        # Once we got the score, don't forget to remove tmp files
+        shutil.rmtree(self.model_tmp) 
+        shutil.rmtree(self.gold_tmp) 
+        os.makedirs(self.model_tmp)
+        os.makedirs(self.gold_tmp)
+
+        return recall, precision, f_score
 
     def compute_score(self, gts, res):
         """
-        Computes Rouge-L score given a set of reference and candidate sentences for the dataset
+        Computes Rouge score given a set of reference and candidate sentences for the dataset
         Invoked by evaluate_captions.py 
         :param hypo_for_image: dict : candidate / test sentences with "image name" key and "tokenized sentences" as values 
         :param ref_for_image: dict : reference MS-COCO sentences with "image name" key and "tokenized sentences" as values
-        :returns: average_score: float (mean ROUGE-L score computed by averaging scores for all the images)
+        :returns: average_score: list of float (mean ROUGE score computed by averaging scores for each type of ROUGE)
         """
         assert(gts.keys() == res.keys())
         imgIds = gts.keys()
 
-        score = []
-        for id in imgIds:
-            hypo = res[id]
-            ref  = gts[id]
+        recall, precision, f_score = self.calc_scores(gts, res, imgIds)
 
-            score.append(self.calc_score(hypo, ref))
+        if self.score_type == 'recall':
+            score = recall
+        elif self.score_type == 'precision':
+            score = precision
+        elif self.score_type == 'f_score':
+            score = f_score
 
-            # Sanity check.
-            assert(type(hypo) is list)
-            assert(len(hypo) == 1)
-            assert(type(ref) is list)
-            assert(len(ref) > 0)
-
-        average_score = np.mean(np.array(score))
-        return average_score, np.array(score)
+        # Return Rouge 1, 2, 3, 4, L, W, S*, SU*
+        return score, [None for s in score]
 
     def method(self):
         return "Rouge"

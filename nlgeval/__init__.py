@@ -33,7 +33,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         scorers = [
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
-            (Rouge(), "ROUGE_L"),
+            (Rouge(), ["Rouge_1", "Rouge_2", "Rouge_3", "Rouge_4", "Rouge_L", "Rouge_W", "Rouge_S*", "Rouge_SU*"]),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
@@ -98,7 +98,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
         scorers = [
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
-            (Rouge(), "ROUGE_L"),
+            (Rouge(), ["Rouge_1", "Rouge_2", "Rouge_3", "Rouge_4", "Rouge_L", "Rouge_W", "Rouge_S*", "Rouge_SU*"]),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
@@ -151,7 +151,7 @@ class NLGEval(object):
                         # Overlap
                         'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4',
                         'METEOR',
-                        'ROUGE_L',
+                        "Rouge_1", "Rouge_2", "Rouge_3", "Rouge_4", "Rouge_L", "Rouge_W", "Rouge_S*", "Rouge_SU*",
                         'CIDEr',
 
                         # Skip-thought
@@ -175,7 +175,6 @@ class NLGEval(object):
             Metrics to omit. Omitting Bleu_{i} will omit Bleu_{j} for j>=i.
         :type metrics_to_omit: Optional[Collection[str]]
         """
-
         if metrics_to_omit is None:
             self.metrics_to_omit = set()
         else:
@@ -210,8 +209,8 @@ class NLGEval(object):
 
         if 'METEOR' not in self.metrics_to_omit:
             self.scorers.append((Meteor(), "METEOR"))
-        if 'ROUGE_L' not in self.metrics_to_omit:
-            self.scorers.append((Rouge(), "ROUGE_L"))
+        if 'ROUGE' not in self.metrics_to_omit:
+            self.scorers.append((Rouge(), ["Rouge_1", "Rouge_2", "Rouge_3", "Rouge_4", "Rouge_L", "Rouge_W", "Rouge_S*", "Rouge_SU*"]))
         if 'CIDEr' not in self.metrics_to_omit:
             self.scorers.append((Cider(), "CIDEr"))
 
@@ -273,6 +272,7 @@ class NLGEval(object):
                 value = float(value.strip())
                 ret_scores[name] = value
 
+        self.load_scorers()     # Official ROUGE script need to reloaded, or it throws error...
         return ret_scores
 
     def compute_metrics(self, ref_list, hyp_list):
