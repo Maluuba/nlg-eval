@@ -310,4 +310,5 @@ class NLGEval(object):
                 value = float(value.strip())
                 ret_scores[name] = value
 
+        self.load_scorers()     # Official ROUGE script need to reloaded, or it throws error...
         return ret_scores
