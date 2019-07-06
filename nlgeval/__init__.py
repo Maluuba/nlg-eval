@@ -9,6 +9,7 @@ from nlgeval.pycocoevalcap.bleu.bleu import Bleu
 from nlgeval.pycocoevalcap.cider.cider import Cider
 from nlgeval.pycocoevalcap.meteor.meteor import Meteor
 from nlgeval.pycocoevalcap.rouge.rouge import Rouge
+from nlgeval.others.bert_scorer import BertScore
 
 
 # str/unicode stripping in Python 2 and 3 instead of `str.strip`.
@@ -34,6 +35,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
             (Rouge(), "ROUGE_L"),
+            (BertScore(), "BERT_score"),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
@@ -99,6 +101,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
             (Rouge(), "ROUGE_L"),
+            (BertScore(), "BERT_score"),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
@@ -152,6 +155,7 @@ class NLGEval(object):
                         'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4',
                         'METEOR',
                         'ROUGE_L',
+                        'BERT_score'
                         'CIDEr',
 
                         # Skip-thought
@@ -212,6 +216,8 @@ class NLGEval(object):
             self.scorers.append((Meteor(), "METEOR"))
         if 'ROUGE_L' not in self.metrics_to_omit:
             self.scorers.append((Rouge(), "ROUGE_L"))
+        if 'BERT_score' not in self.metrics_to_omit:
+            self.scorers.append((BertScore(), "BERT_score"))
         if 'CIDEr' not in self.metrics_to_omit:
             self.scorers.append((Cider(), "CIDEr"))
 
