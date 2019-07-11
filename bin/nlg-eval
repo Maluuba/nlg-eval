@@ -9,10 +9,15 @@ import stat
 import sys
 import time
 from zipfile import ZipFile
+from xdg import XDG_CONFIG_HOME, XDG_CACHE_HOME
+import json
 
 import click
 
 import nlgeval
+import nlgeval.utils
+
+CODE_PATH = nlgeval.__path__[0]
 
 
 def _download_file(d):
@@ -62,23 +67,30 @@ def setup(ctx, param, value):
         return
     from multiprocessing import Pool
 
-    data_path = os.getenv('NLGEVAL_DATA', 'nlgeval/data')
-    path = 'nlgeval/word2vec/glove2word2vec.py'
+    if value == 'default':
+        data_path = os.getenv('NLGEVAL_DATA', os.path.join(XDG_CACHE_HOME, 'nlgeval'))
+    else:
+        data_path = value
+    click.secho("Installing to {}".format(data_path), fg='red')
+    click.secho("In case of incomplete downloads, delete the directory and run `nlg-eval --setup {}' again.".format(data_path),
+               fg='red')
+
+    path = os.path.join(CODE_PATH, 'nlgeval/word2vec/glove2word2vec.py')
     if os.path.exists(path):
-        os.remove('nlgeval/word2vec/glove2word2vec.py')
+        os.remove(path)
 
     downloads = []
 
     if sys.version_info[0] == 2:
         downloads.append(dict(
             url='https://raw.githubusercontent.com/manasRK/glove-gensim/42ce46f00e83d3afa028fb6bf17ed3c90ca65fcc/glove2word2vec.py',
-            target_dir='nlgeval/word2vec'
+            target_dir=os.path.join(CODE_PATH, 'nlgeval/word2vec')
         ))
     else:
         # Change URL once https://github.com/robmsmt/glove-gensim/pull/1 has been merged.
         downloads.append(dict(
             url='https://raw.githubusercontent.com/juharris/glove-gensim/4c2224bccd61627b76c50a5e1d6afd1c82699d22/glove2word2vec.py',
-            target_dir='nlgeval/word2vec'
+            target_dir=os.path.join(CODE_PATH, 'nlgeval/word2vec')
         ))
 
     setup_glove = not os.path.exists(os.path.join(data_path, 'glove.6B.300d.model.bin'))
@@ -121,7 +133,7 @@ def setup(ctx, param, value):
     # multi-bleu.perl
     downloads.append(dict(
         url='https://raw.githubusercontent.com/moses-smt/mosesdecoder/b199e654df2a26ea58f234cbb642e89d9c1f269d/scripts/generic/multi-bleu.perl',
-        target_dir='nlgeval/multibleu'
+        target_dir=os.path.join(CODE_PATH, 'nlgeval/multibleu')
     ))
 
     for target_dir in {d['target_dir'] for d in downloads}:
@@ -138,7 +150,7 @@ def setup(ctx, param, value):
         from nlgeval.word2vec.generate_w2v_files import generate
         with ZipFile(os.path.join(data_path, 'glove.6B.zip')) as z:
             z.extract('glove.6B.300d.txt', data_path)
-        generate()
+        generate(data_path)
         for p in [
             os.path.join(data_path, 'glove.6B.zip'),
             os.path.join(data_path, 'glove.6B.300d.txt'),
@@ -147,21 +159,39 @@ def setup(ctx, param, value):
             if os.path.exists(p):
                 os.remove(p)
 
-    path = 'nlgeval/multibleu/multi-bleu.perl'
+    path = os.path.join(CODE_PATH, 'nlgeval/multibleu/multi-bleu.perl')
     stats = os.stat(path)
     os.chmod(path, stats.st_mode | stat.S_IEXEC)
 
+    cfg_path = os.path.join(XDG_CONFIG_HOME, "nlgeval")
+    if not os.path.exists(cfg_path):
+        os.makedirs(cfg_path)
+    rc = dict()
+    try:
+        with open(os.path.join(cfg_path, "rc.json"), 'rt') as f:
+            rc = json.load(f)
+    except:
+        print("WARNING: could not read rc.json in %s, overwriting" % cfg_path)
+    rc['data_path'] = data_path
+    with open(os.path.join(cfg_path, "rc.json"), 'wt') as f:
+        f.write(json.dumps(rc))
     ctx.exit()
 
 
 @click.command()
-@click.option('--setup', is_flag=True, callback=setup, expose_value=False, is_eager=True)
+@click.option('--setup', metavar="DATA_DIR", callback=setup, expose_value=False, is_eager=True)
 @click.option('--references', type=click.Path(exists=True), multiple=True, required=True, help='Path of the reference file. This option can be provided multiple times for multiple reference files.')
 @click.option('--hypothesis', type=click.Path(exists=True), required=True, help='Path of the hypothesis file.')
 @click.option('--no-overlap', is_flag=True, help='Flag. If provided, word overlap based metrics will not be computed.')
 @click.option('--no-skipthoughts', is_flag=True, help='Flag. If provided, skip-thought cosine similarity will not be computed.')
 @click.option('--no-glove', is_flag=True, help='Flag. If provided, other word embedding based metrics will not be computed.')
 def compute_metrics(hypothesis, references, no_overlap, no_skipthoughts, no_glove):
+    try:
+        data_dir = nlgeval.utils.get_data_dir()
+    except nlgeval.utils.InvalidDataDirException:
+        sys.exit(1)
+    click.secho("Using data from {}".format(data_dir), fg='green')
+    click.secho("In case of broken downloads, remove the directory and run setup again.", fg='green')
     nlgeval.compute_metrics(hypothesis, references, no_overlap, no_skipthoughts, no_glove)
 
 

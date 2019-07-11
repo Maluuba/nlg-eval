@@ -18,8 +18,7 @@ def txt2bin(filename):
     KeyedVectors.load(filename.replace('txt', 'bin'), mmap='r')
 
 
-def generate():
-    path = os.path.join(os.path.dirname(__file__), "..", "data")
+def generate(path):
     glove_vector_file = os.path.join(path, 'glove.6B.300d.txt')
     output_model_file = os.path.join(path, 'glove.6B.300d.model.txt')
 

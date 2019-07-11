@@ -43,8 +43,10 @@ pip install -e .
 # If using macOS High Sierra or higher, run this before run setup, to allow multithreading
 # export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
-# Download required data files.
-nlg-eval --setup
+# Download required data and external code files.
+# If you don't like the default (~/.cache/nlgeval), specify a path instead of "default"
+# The download path is stored in ~/.config/nlgeval/rc.json
+nlg-eval --setup default
 ```
 
 ## Usage ##
@@ -157,6 +159,8 @@ users, you can set the `NLGEVAL_DATA` environment variable to let nlg-eval know
 where to find its models and data.  E.g.
 
     NLGEVAL_DATA=~/workspace/nlg-eval/nlgeval/data
+
+This variable overrides the value provided during setup (stored in `~/.config/nlgeval/rc.json`)
 
 ## Microsoft Open Source Code of Conduct ##
 This project has adopted the [Microsoft Open Source Code of

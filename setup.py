@@ -5,6 +5,7 @@
 
 import sys
 
+import atexit
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
@@ -25,13 +26,13 @@ def _post_setup():
 class PostDevelopCommand(develop):
     def run(self):
         develop.run(self)
-        _post_setup()
+        atexit.register(_post_setup)
 
 
 class PostInstallCommand(install):
     def run(self):
         install.run(self)
-        _post_setup()
+        atexit.register(_post_setup)
 
 
 if __name__ == '__main__':
