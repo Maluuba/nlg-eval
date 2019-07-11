@@ -63,6 +63,9 @@ def _download_file(d):
 
 
 def setup(ctx, param, value):
+    from nltk.downloader import download
+    download('punkt')
+
     if not value:
         return
     from multiprocessing import Pool

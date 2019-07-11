@@ -5,7 +5,6 @@
 
 import sys
 
-import atexit
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
@@ -15,24 +14,6 @@ try:
     from pip._internal.req import parse_requirements
 except:
     from pip.req import parse_requirements
-
-
-def _post_setup():
-    from nltk.downloader import download
-    download('punkt')
-
-
-# Set up post install actions as per https://stackoverflow.com/a/36902139/1226799
-class PostDevelopCommand(develop):
-    def run(self):
-        develop.run(self)
-        atexit.register(_post_setup)
-
-
-class PostInstallCommand(install):
-    def run(self):
-        install.run(self)
-        atexit.register(_post_setup)
 
 
 if __name__ == '__main__':
@@ -52,7 +33,4 @@ if __name__ == '__main__':
           include_package_data=True,
           scripts=['bin/nlg-eval'],
           install_requires=reqs,
-          cmdclass={
-              'develop': PostDevelopCommand,
-              'install': PostInstallCommand,
-          })
+    )
