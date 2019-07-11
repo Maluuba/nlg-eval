@@ -24,7 +24,7 @@ if __name__ == '__main__':
     reqs = [str(ir.req) for ir in install_reqs]
 
     setup(name='nlg-eval',
-          version='2.1',
+          version='2.2',
           description="Wrapper for multiple NLG evaluation methods and metrics.",
           author='Shikhar Sharma, Hannes Schulz, Justin Harris',
           author_email='shikhar.sharma@microsoft.com, hannes.schulz@microsoft.com, justin.harris@microsoft.com',
