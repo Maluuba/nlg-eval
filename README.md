@@ -44,7 +44,7 @@ pip install -e .
 # export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 # Download required data and external code files.
-# If you don't like the default (~/.cache/nlgeval), specify a path instead of "default"
+# If you don't like the default path (~/.cache/nlgeval), specify a path instead of "default"
 # The download path is stored in ~/.config/nlgeval/rc.json
 nlg-eval --setup default
 ```
