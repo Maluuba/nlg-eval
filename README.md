@@ -43,10 +43,10 @@ pip install -e .
 # If using macOS High Sierra or higher, run this before run setup, to allow multithreading
 # export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
-# Download required data and external code files.
-# If you don't like the default path (~/.cache/nlgeval), specify a path instead of "default"
+# Download required data (e.g. models, embeddings) and external code files.
+# If you don't like the default path (~/.cache/nlgeval), specify a path where the files are downloaded.
 # The download path is stored in ~/.config/nlgeval/rc.json
-nlg-eval --setup default
+nlg-eval --setup [data path]
 ```
 
 ## Usage ##
