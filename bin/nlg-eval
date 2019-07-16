@@ -82,7 +82,7 @@ def setup(data_path):
     click.secho("In case of incomplete downloads, delete the directory and run `nlg-eval --setup {}' again.".format(data_path),
                fg='red')
 
-    path = os.path.join(CODE_PATH, 'nlgeval/word2vec/glove2word2vec.py')
+    path = os.path.join(CODE_PATH, 'word2vec/glove2word2vec.py')
     if os.path.exists(path):
         os.remove(path)
 
@@ -91,12 +91,12 @@ def setup(data_path):
     if sys.version_info[0] == 2:
         downloads.append(dict(
             url='https://raw.githubusercontent.com/manasRK/glove-gensim/42ce46f00e83d3afa028fb6bf17ed3c90ca65fcc/glove2word2vec.py',
-            target_dir=os.path.join(CODE_PATH, 'nlgeval/word2vec')
+            target_dir=os.path.join(CODE_PATH, 'word2vec')
         ))
     else:
         downloads.append(dict(
             url='https://raw.githubusercontent.com/robmsmt/glove-gensim/4c2224bccd61627b76c50a5e1d6afd1c82699d22/glove2word2vec.py',
-            target_dir=os.path.join(CODE_PATH, 'nlgeval/word2vec')
+            target_dir=os.path.join(CODE_PATH, 'word2vec')
         ))
 
     setup_glove = not os.path.exists(os.path.join(data_path, 'glove.6B.300d.model.bin'))
@@ -139,7 +139,7 @@ def setup(data_path):
     # multi-bleu.perl
     downloads.append(dict(
         url='https://raw.githubusercontent.com/moses-smt/mosesdecoder/b199e654df2a26ea58f234cbb642e89d9c1f269d/scripts/generic/multi-bleu.perl',
-        target_dir=os.path.join(CODE_PATH, 'nlgeval/multibleu')
+        target_dir=os.path.join(CODE_PATH, 'multibleu')
     ))
 
     for target_dir in {d['target_dir'] for d in downloads}:
@@ -165,7 +165,7 @@ def setup(data_path):
             if os.path.exists(p):
                 os.remove(p)
 
-    path = os.path.join(CODE_PATH, 'nlgeval/multibleu/multi-bleu.perl')
+    path = os.path.join(CODE_PATH, 'multibleu/multi-bleu.perl')
     stats = os.stat(path)
     os.chmod(path, stats.st_mode | stat.S_IEXEC)
 
