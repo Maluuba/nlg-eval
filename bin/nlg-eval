@@ -191,6 +191,15 @@ def setup(data_path):
 @click.option('--no-skipthoughts', is_flag=True, help='Flag. If provided, skip-thought cosine similarity will not be computed.')
 @click.option('--no-glove', is_flag=True, help='Flag. If provided, other word embedding based metrics will not be computed.')
 def compute_metrics(hypothesis, references, no_overlap, no_skipthoughts, no_glove):
+    """
+    Compute nlg-eval metrics.
+
+    The --hypothesis and at least one --references parameters are required.
+
+    To download the data and additional code files, use `nlg-eval --setup [data path]`.
+
+    Note that nlg-eval also features an API, which may be easier to use.
+    """
     try:
         data_dir = nlgeval.utils.get_data_dir()
     except nlgeval.utils.InvalidDataDirException:
