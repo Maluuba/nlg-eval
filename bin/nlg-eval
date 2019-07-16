@@ -62,18 +62,22 @@ def _download_file(d):
                     raise
 
 
-def setup(ctx, param, value):
+@click.command()
+@click.argument("data_path", required=False)
+def setup(data_path):
+    """
+    Download required code and data files for nlg-eval.
+
+    If the data_path argument is provided, install to the given location.
+    Otherwise, your cache directory is used (usually ~/.cache/nlgeval).
+    """
     from nltk.downloader import download
     download('punkt')
 
-    if not value:
-        return
     from multiprocessing import Pool
 
-    if value == 'default':
+    if data_path is None:
         data_path = os.getenv('NLGEVAL_DATA', os.path.join(XDG_CACHE_HOME, 'nlgeval'))
-    else:
-        data_path = value
     click.secho("Installing to {}".format(data_path), fg='red')
     click.secho("In case of incomplete downloads, delete the directory and run `nlg-eval --setup {}' again.".format(data_path),
                fg='red')
@@ -178,11 +182,9 @@ def setup(ctx, param, value):
     rc['data_path'] = data_path
     with open(os.path.join(cfg_path, "rc.json"), 'wt') as f:
         f.write(json.dumps(rc))
-    ctx.exit()
 
 
 @click.command()
-@click.option('--setup', metavar="DATA_DIR", callback=setup, expose_value=False, is_eager=True)
 @click.option('--references', type=click.Path(exists=True), multiple=True, required=True, help='Path of the reference file. This option can be provided multiple times for multiple reference files.')
 @click.option('--hypothesis', type=click.Path(exists=True), required=True, help='Path of the hypothesis file.')
 @click.option('--no-overlap', is_flag=True, help='Flag. If provided, word overlap based metrics will not be computed.')
@@ -199,4 +201,8 @@ def compute_metrics(hypothesis, references, no_overlap, no_skipthoughts, no_glov
 
 
 if __name__ == '__main__':
-    compute_metrics()
+    if len(sys.argv) > 1 and sys.argv[1] == '--setup':
+        del sys.argv[0]
+        setup()
+    else:
+        compute_metrics()
