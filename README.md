@@ -15,21 +15,6 @@ Rows across these files should correspond to the same example.
 - Vector Extrema cosine similarity
 - Greedy Matching score
 
-## Requirements ##
-Tested using
-- Java 1.8.0
-- python 3.6
-  - click 6.7
-  - nltk 3.3
-  - numpy 1.14.5
-  - scikit-learn 0.19.1
-  - gensim 3.4.0
-  - Theano 1.0.2
-  - scipy 1.1.0
-  - six>=1.11
-
-Python 2.7 has also been tested with mostly the same dependencies but an older version of gensim. You can see the version requirements in [requirements_py2.txt](requirements_py2.txt)
-
 ## Setup ##
 
 Install Java 1.8.0 (or higher).
@@ -42,11 +27,18 @@ pip install git+https://github.com/Maluuba/nlg-eval.git@master
 # If using macOS High Sierra or higher, run this before run setup, to allow multithreading
 # export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
+# Simple setup:
 # Download required data (e.g. models, embeddings) and external code files.
-# If you don't like the default path (~/.cache/nlgeval), specify a path where the files are downloaded.
-# The data path is stored in ~/.config/nlgeval/rc.json and can be overwritten by
+nlg-eval --setup
+```
+
+### Custom Setup ###
+```bash
+# If you don't like the default path (~/.cache/nlgeval) for the downloaded data,
+# then specify a path where you want the files to be downloaded.
+# The value for the data path is stored in ~/.config/nlgeval/rc.json and can be overwritten by
 # setting the NLGEVAL_DATA environment variable.
-nlg-eval --setup [data path]
+nlg-eval --setup ${data_path}
 ```
 
 ## Usage ##
