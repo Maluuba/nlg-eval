@@ -37,14 +37,16 @@ Then run:
 
 ```bash
 # Install the Python dependencies.
-# It may take a while to run because it's downloading some files. You can instead run `pip install -v -e .` to see more details.
-pip install -e .
+pip install git+https://github.com/Maluuba/nlg-eval.git@master
 
 # If using macOS High Sierra or higher, run this before run setup, to allow multithreading
 # export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
-# Download required data files.
-nlg-eval --setup
+# Download required data (e.g. models, embeddings) and external code files.
+# If you don't like the default path (~/.cache/nlgeval), specify a path where the files are downloaded.
+# The data path is stored in ~/.config/nlgeval/rc.json and can be overwritten by
+# setting the NLGEVAL_DATA environment variable.
+nlg-eval --setup [data path]
 ```
 
 ## Usage ##
@@ -157,6 +159,8 @@ users, you can set the `NLGEVAL_DATA` environment variable to let nlg-eval know
 where to find its models and data.  E.g.
 
     NLGEVAL_DATA=~/workspace/nlg-eval/nlgeval/data
+
+This variable overrides the value provided during setup (stored in `~/.config/nlgeval/rc.json`)
 
 ## Microsoft Open Source Code of Conduct ##
 This project has adopted the [Microsoft Open Source Code of
