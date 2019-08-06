@@ -33,7 +33,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         scorers = [
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
-            (Rouge(), "ROUGE_L"),
+            (Rouge(2), ["ROUGE_1", "ROUGE_2", "ROUGE_L"]),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
@@ -98,7 +98,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
         scorers = [
             (Bleu(4), ["Bleu_1", "Bleu_2", "Bleu_3", "Bleu_4"]),
             (Meteor(), "METEOR"),
-            (Rouge(), "ROUGE_L"),
+            (Rouge(2), ["ROUGE_1", "ROUGE_2", "ROUGE_L"]),
             (Cider(), "CIDEr")
         ]
         for scorer, method in scorers:
@@ -151,7 +151,7 @@ class NLGEval(object):
                         # Overlap
                         'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4',
                         'METEOR',
-                        'ROUGE_L',
+                        'ROUGE_1', 'ROUGE_2', 'ROUGE_L',
                         'CIDEr',
 
                         # Skip-thought
@@ -210,8 +210,18 @@ class NLGEval(object):
 
         if 'METEOR' not in self.metrics_to_omit:
             self.scorers.append((Meteor(), "METEOR"))
+
         if 'ROUGE_L' not in self.metrics_to_omit:
-            self.scorers.append((Rouge(), "ROUGE_L"))
+            omit_rouge_i = False
+            for i in range(1, 2 + 1):
+                if 'ROUGE_{}'.format(i) in self.metrics_to_omit:
+                    omit_rouge_i = True
+                    if i > 1:
+                        self.scorers.append((Rouge(i - 1), ['ROUGE_{}'.format(j) for j in range(1, i)] + ["ROUGE_L"]))
+                    break
+            if not omit_rouge_i:
+                self.scorers.append((Rouge(2), ["ROUGE_1", "ROUGE_2", "ROUGE_L"]))
+                
         if 'CIDEr' not in self.metrics_to_omit:
             self.scorers.append((Cider(), "CIDEr"))
 
