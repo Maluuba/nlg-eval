@@ -119,3 +119,14 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.568696, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.784205, scores['GreedyMatchingScore'], places=5)
         self.assertEqual(11, len(scores))
+
+    def test_bert_score(self):
+        n = NLGEval(metrics_to_omit=['Bleu_1', 'Bleu_2', 'Bleu_3', 'ROUGE_L', 'METEOR', 'EmbeddingAverageCosineSimilairty', 'CIDEr', 'SkipThoughtCS', 'VectorExtremaCosineSimilarity', 'GreedyMatchingScore'])
+
+        # Individual Metrics
+        scores = n.compute_individual_metrics(ref=["Until you start talking to Katrin Bahr."],
+                                              hyp="Until you talk to Katrin Bahr.")
+        self.assertAlmostEqual(0.9345, scores['BERT_score'], places=5)
+
+if __name__ == "__main__":
+     unittest.main()
