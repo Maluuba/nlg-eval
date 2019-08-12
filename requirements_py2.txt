@@ -9,3 +9,4 @@ scikit-learn<0.21
 gensim<1
 Theano>=0.8.1
 tqdm>=4.24
+pyrouge>=0.1.3
