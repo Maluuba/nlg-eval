@@ -2,6 +2,10 @@
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 import os
 import numpy as np
+
+from nlgeval.utils import get_data_dir
+
+
 try:
     from gensim.models import KeyedVectors
 except ImportError:
@@ -10,7 +14,7 @@ except ImportError:
 
 class Embedding(object):
     def __init__(self):
-        path = os.environ.get('NLGEVAL_DATA', os.path.join(os.path.dirname(__file__), '..', 'data'))
+        path = get_data_dir()
         self.m = KeyedVectors.load(os.path.join(path, 'glove.6B.300d.model.bin'), mmap='r')
         try:
             self.unk = self.m.vectors.mean(axis=0)
