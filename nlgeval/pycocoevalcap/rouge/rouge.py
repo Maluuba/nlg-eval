@@ -10,7 +10,6 @@
 from pyrouge import Rouge155
 import shutil
 
-import logging
 import os
 
 __cur_path = os.path.dirname(os.path.realpath(__file__))
@@ -24,7 +23,7 @@ class Rouge():
 
     '''
     def __init__(self, score_type="f_score", rouge_dir=OFFICIAL_PATH, model_tmp=MODEL_PATH, gold_tmp=GOLD_PATH):
-        self.rouge155 = Rouge155(rouge_dir, log_level=logging.ERROR)
+        self.rouge155 = Rouge155(rouge_dir)
         self.model_tmp = model_tmp
         self.gold_tmp = gold_tmp
 
