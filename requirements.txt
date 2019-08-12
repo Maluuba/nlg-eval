@@ -10,3 +10,4 @@ gensim>=3
 Theano>=0.8.1
 tqdm>=4.24
 pyrouge>=0.1.3
+xdg==1.0.7
