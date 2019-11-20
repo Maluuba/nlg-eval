@@ -25,10 +25,11 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.9070631, scores['ROUGE_L'], places=5)
         self.assertAlmostEqual(0.0, scores['CIDEr'], places=5)
         self.assertAlmostEqual(0.8375251, scores['SkipThoughtCS'], places=5)
-        self.assertAlmostEqual(0.980075, scores['EmbeddingAverageCosineSimilairty'], places=5)
+        self.assertAlmostEqual(0.980075, scores['EmbeddingAverageCosineSimilarity'], places=5)
+        self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.94509, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.960771, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(11, len(scores))
+        self.assertEqual(12, len(scores))
 
         scores = n.compute_metrics(ref_list=[
             [
@@ -53,10 +54,10 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.522104, scores['ROUGE_L'], places=5)
         self.assertAlmostEqual(1.242192, scores['CIDEr'], places=5)
         self.assertAlmostEqual(0.626149, scores['SkipThoughtCS'], places=5)
-        self.assertAlmostEqual(0.88469, scores['EmbeddingAverageCosineSimilairty'], places=5)
+        self.assertAlmostEqual(0.88469, scores['EmbeddingAverageCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.568696, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.784205, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(11, len(scores))
+        self.assertEqual(12, len(scores))
 
         # Non-ASCII tests.
         scores = n.compute_individual_metrics(ref=["Test en français.",
@@ -70,10 +71,11 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.9070631, scores['ROUGE_L'], places=5)
         self.assertAlmostEqual(0.0, scores['CIDEr'], places=5)
         self.assertAlmostEqual(0.9192341566085815, scores['SkipThoughtCS'], places=5)
-        self.assertAlmostEqual(0.906562, scores['EmbeddingAverageCosineSimilairty'], places=5)
+        self.assertAlmostEqual(0.906562, scores['EmbeddingAverageCosineSimilarity'], places=5)
+        self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.815158, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.940959, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(11, len(scores))
+        self.assertEqual(12, len(scores))
 
         scores = n.compute_individual_metrics(ref=["テスト"],
                                               hyp="テスト")
@@ -83,10 +85,10 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.0, scores['CIDEr'], places=3)
         self.assertAlmostEqual(1.0, scores['SkipThoughtCS'], places=3)
         self.assertAlmostEqual(1.0, scores['GreedyMatchingScore'], places=3)
-        self.assertEqual(11, len(scores))
+        self.assertEqual(12, len(scores))
 
     def test_compute_metrics_omit(self):
-        n = NLGEval(metrics_to_omit=['Bleu_3', 'METEOR', 'EmbeddingAverageCosineSimilairty'])
+        n = NLGEval(metrics_to_omit=['Bleu_3', 'METEOR', 'EmbeddingAverageCosineSimilarity'])
 
         # Individual Metrics
         scores = n.compute_individual_metrics(ref=["this is a test",
@@ -115,7 +117,8 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.522104, scores['ROUGE_L'], places=5)
         self.assertAlmostEqual(1.242192, scores['CIDEr'], places=5)
         self.assertAlmostEqual(0.626149, scores['SkipThoughtCS'], places=5)
-        self.assertAlmostEqual(0.88469, scores['EmbeddingAverageCosineSimilairty'], places=5)
+        self.assertAlmostEqual(0.88469, scores['EmbeddingAverageCosineSimilarity'], places=5)
+        self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.568696, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.784205, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(11, len(scores))
+        self.assertEqual(12, len(scores))

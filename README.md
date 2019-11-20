@@ -128,8 +128,8 @@ gives
     METEOR: 0.295797
     ROUGE_L: 0.522104
     CIDEr: 1.242192
-    SkipThoughtsCosineSimilairty: 0.626149
-    EmbeddingAverageCosineSimilairty: 0.884690
+    SkipThoughtsCosineSimilarity: 0.626149
+    EmbeddingAverageCosineSimilarity: 0.884690
     VectorExtremaCosineSimilarity: 0.568696
     GreedyMatchingScore: 0.784205
 

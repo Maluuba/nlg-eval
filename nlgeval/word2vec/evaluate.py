@@ -51,6 +51,10 @@ def eval_emb_metrics(hypothesis, references, emb=None, metrics_to_omit=None):
 
     if metrics_to_omit is None:
         metrics_to_omit = set()
+    else:
+        if 'EmbeddingAverageCosineSimilairty' in metrics_to_omit:
+            metrics_to_omit.remove('EmbeddingAverageCosineSimilairty')
+            metrics_to_omit.add('EmbeddingAverageCosineSimilarity')
 
     emb_hyps = []
     avg_emb_hyps = []
@@ -94,9 +98,11 @@ def eval_emb_metrics(hypothesis, references, emb=None, metrics_to_omit=None):
         extreme_emb_refs.append(extreme_emb_refsource)
 
     rval = []
-    if 'EmbeddingAverageCosineSimilairty' not in metrics_to_omit:
+    if 'EmbeddingAverageCosineSimilarity' not in metrics_to_omit:
         cos_similarity = list(map(lambda refv: cosine_similarity(refv, avg_emb_hyps).diagonal(), avg_emb_refs))
         cos_similarity = np.max(cos_similarity, axis=0).mean()
+        rval.append("EmbeddingAverageCosineSimilarity: %0.6f" % (cos_similarity))
+        # For backwards compatibility with an old typo before Nov 20, 2019.
         rval.append("EmbeddingAverageCosineSimilairty: %0.6f" % (cos_similarity))
 
     if 'VectorExtremaCosineSimilarity' not in metrics_to_omit:
