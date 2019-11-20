@@ -59,7 +59,7 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
         vector_refs = map(lambda refl: encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
         cosine_similarity = list(map(lambda refv: cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
         cosine_similarity = np.max(cosine_similarity, axis=0).mean()
-        print("SkipThoughtsCosineSimilairty: %0.6f" % (cosine_similarity))
+        print("SkipThoughtsCosineSimilarity: %0.6f" % (cosine_similarity))
         ret_scores['SkipThoughtCS'] = cosine_similarity
         del model
 
@@ -142,7 +142,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
 
 class NLGEval(object):
     glove_metrics = {
-        'EmbeddingAverageCosineSimilairty',
+        'EmbeddingAverageCosineSimilarity',
         'VectorExtremaCosineSimilarity',
         'GreedyMatchingScore',
     }
@@ -180,6 +180,11 @@ class NLGEval(object):
             self.metrics_to_omit = set()
         else:
             self.metrics_to_omit = set(metrics_to_omit)
+            # For backwards compatibility.
+            if 'EmbeddingAverageCosineSimilairty' in self.metrics_to_omit:
+                self.metrics_to_omit.remove('EmbeddingAverageCosineSimilairty')
+                self.metrics_to_omit.add('EmbeddingAverageCosineSimilarity')
+
         assert len(self.metrics_to_omit - self.valid_metrics) == 0, \
             "Invalid metrics to omit: {}".format(self.metrics_to_omit - self.valid_metrics)
 
