@@ -45,6 +45,8 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
             else:
                 print("%s: %0.6f" % (method, score))
                 ret_scores[method] = score
+            if isinstance(scorer, Meteor):
+                scorer.close()
         del scorers
 
     if not no_skipthoughts:
@@ -108,6 +110,9 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
                     ret_scores[m] = sc
             else:
                 ret_scores[method] = score
+            if isinstance(scorer, Meteor):
+                scorer.close()
+        del scorers
 
     if not no_skipthoughts:
         from nlgeval.skipthoughts import skipthoughts
