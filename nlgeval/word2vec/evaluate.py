@@ -63,12 +63,15 @@ def eval_emb_metrics(hypothesis, references, emb=None, metrics_to_omit=None):
         embs = [emb.vec(word) for word in word_tokenize(hyp)]
 
         avg_emb = np.sum(embs, axis=0) / np.linalg.norm(np.sum(embs, axis=0))
-        assert not np.any(np.isnan(avg_emb))
-
-        maxemb = np.max(embs, axis=0)
-        minemb = np.min(embs, axis=0)
-        extreme_emb = list(map(lambda x, y: x if ((x>y or x<-y) and y>0) or ((x<y or x>-y) and y<0) else y, maxemb, minemb))
-
+        # assert not np.any(np.isnan(avg_emb))
+        if not np.any(np.isnan(avg_emb)):
+            maxemb = np.max(embs, axis=0)
+            minemb = np.min(embs, axis=0)
+            extreme_emb = list(map(lambda x, y: x if ((x>y or x<-y) and y>0) or ((x<y or x>-y) and y<0) else y, maxemb, minemb))
+        else:
+            avg_emb = np.zeros(300)
+            extreme_emb = np.zeros(300)
+            embs = [np.zeros(300)]
         emb_hyps.append(embs)
         avg_emb_hyps.append(avg_emb)
         extreme_emb_hyps.append(extreme_emb)
@@ -84,11 +87,15 @@ def eval_emb_metrics(hypothesis, references, emb=None, metrics_to_omit=None):
             embs = [emb.vec(word) for word in word_tokenize(ref)]
 
             avg_emb = np.sum(embs, axis=0) / np.linalg.norm(np.sum(embs, axis=0))
-            assert not np.any(np.isnan(avg_emb))
-
-            maxemb = np.max(embs, axis=0)
-            minemb = np.min(embs, axis=0)
-            extreme_emb = list(map(lambda x, y: x if ((x>y or x<-y) and y>0) or ((x<y or x>-y) and y<0) else y, maxemb, minemb))
+            # assert not np.any(np.isnan(avg_emb))
+            if not np.any(np.isnan(avg_emb)):
+                maxemb = np.max(embs, axis=0)
+                minemb = np.min(embs, axis=0)
+                extreme_emb = list(map(lambda x, y: x if ((x>y or x<-y) and y>0) or ((x<y or x>-y) and y<0) else y, maxemb, minemb))
+            else:
+                avg_emb = np.zeros(300)
+                extreme_emb = np.zeros(300)
+                embs = [np.zeros(300)]
 
             emb_refsource.append(embs)
             avg_emb_refsource.append(avg_emb)

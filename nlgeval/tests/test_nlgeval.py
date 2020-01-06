@@ -106,7 +106,7 @@ class TestNlgEval(unittest.TestCase):
     def test_compute_metrics_empty(self):
         n = NLGEval()
 
-        # Individual Metrics
+        # One of the ref is empty
         scores = n.compute_individual_metrics(ref=["this is a test",
                                                    ""],
                                               hyp="this is a good test")
@@ -122,6 +122,23 @@ class TestNlgEval(unittest.TestCase):
         self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.94509, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.960771, scores['GreedyMatchingScore'], places=5)
+        self.assertEqual(12, len(scores))
+
+        # Empty hyp
+        scores = n.compute_individual_metrics(ref=["this is a good test"],
+                                              hyp="")
+        self.assertAlmostEqual(0, scores['Bleu_1'], places=5)
+        self.assertAlmostEqual(0, scores['Bleu_2'], places=5)
+        self.assertAlmostEqual(0, scores['Bleu_3'], places=5)
+        self.assertAlmostEqual(0, scores['Bleu_4'], places=5)
+        self.assertAlmostEqual(0, scores['METEOR'], places=5)
+        self.assertAlmostEqual(0, scores['ROUGE_L'], places=5)
+        self.assertAlmostEqual(0, scores['CIDEr'], places=5)
+        self.assertAlmostEqual(0, scores['SkipThoughtCS'], places=5)
+        self.assertAlmostEqual(0, scores['EmbeddingAverageCosineSimilarity'], places=5)
+        self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
+        self.assertAlmostEqual(0, scores['VectorExtremaCosineSimilarity'], places=5)
+        self.assertAlmostEqual(0, scores['GreedyMatchingScore'], places=5)
         self.assertEqual(12, len(scores))
 
     def test_compute_metrics(self):

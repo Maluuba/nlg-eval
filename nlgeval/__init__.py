@@ -88,7 +88,7 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
 
     if isinstance(ref, six.string_types):
         ref = ref.split('||<|>||')  # special delimiter for backward compatibility
-    ref = [a.strip() for a in ref if len(a.strip()) > 0]
+    ref = [a.strip() for a in ref]
     refs = {0: ref}
     ref_list = [ref]
 
@@ -245,7 +245,7 @@ class NLGEval(object):
 
     def compute_individual_metrics(self, ref, hyp):
         assert isinstance(hyp, six.string_types)
-        ref = [a.strip() for a in ref if len(a.strip()) > 0]
+        ref = [a.strip() for a in ref]
         refs = {0: ref}
         ref_list = [ref]
 
