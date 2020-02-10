@@ -7,6 +7,7 @@ from __future__ import division
 import atexit
 import logging
 import os
+import re
 import subprocess
 import sys
 import threading
