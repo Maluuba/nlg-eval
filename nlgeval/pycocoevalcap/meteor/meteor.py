@@ -100,7 +100,7 @@ class Meteor:
 
     def _stat(self, hypothesis_str, reference_list):
         # SCORE ||| reference 1 words ||| reference n words ||| hypothesis words
-        hypothesis_str = hypothesis_str.replace('|||', '').replace('  ', ' ')
+        hypothesis_str = hypothesis_str.replace('|||', '')
         score_line = ' ||| '.join(('SCORE', ' ||| '.join(reference_list), hypothesis_str))
         score_line = re.sub(r'\s+', ' ', score_line)
         self.meteor_p.stdin.write(enc(score_line))
