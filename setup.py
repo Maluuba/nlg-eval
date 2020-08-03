@@ -21,7 +21,10 @@ if __name__ == '__main__':
     if sys.version_info[0] < 3:
         requirements_path = 'requirements_py2.txt'
     install_reqs = parse_requirements(requirements_path, session=False)
-    reqs = [str(ir.req) for ir in install_reqs]
+    try:
+        reqs = [str(ir.req) for ir in install_reqs]
+    except:
+        reqs = [str(ir.requirement) for ir in install_reqs]
 
     setup(name='nlg-eval',
           version='2.3',
