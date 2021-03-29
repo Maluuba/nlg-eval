@@ -47,7 +47,7 @@ See [here](https://github.com/Maluuba/nlg-eval/issues/61) for details.
 nlg-eval --setup ${data_path}
 ```
 
-## Validate the Setup (Optional) ###
+### Validate the Setup (Optional) ###
 (These examples were made with Git Bash on Windows)
 
 All of the data files should have been downloaded, you should see sizes like:
