@@ -21,3 +21,4 @@ multi-bleu.perl
 glove2word2vec.py
 
 .idea/
+venv/
