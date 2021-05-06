@@ -103,36 +103,6 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.960771, scores['GreedyMatchingScore'], places=5)
         self.assertEqual(7, len(scores))
 
-    def test_compute_metricsa(self):
-        n = NLGEval()
-
-        # # Individual Metrics
-        scores = n.compute_individual_metrics(ref=["Chocolate , a New Way to Get Cancer "],
-                                              hyp="Chocolate , a Healthy Food")
-        print("Chocolate , a New Way to Get Cancer ", scores)
-
-        scores = n.compute_individual_metrics(ref=["Chocolate and an Interview "],
-                                              hyp="Chocolate , a Healthy Food")
-        print(scores)
-        #
-        # # Individual Metrics
-        # scores = n.compute_individual_metrics(ref=["old people are helping in fact "],
-        #                                       hyp="old people are easy to get along with ")
-        # print("old people are helping in fact ",scores)
-        #
-        # scores = n.compute_individual_metrics(ref=["old people are always happy "],
-        #                                       hyp="old people are easy to get along with ")
-        # print("old people are always happy ",scores)
-
-        # Individual Metrics
-        # scores = n.compute_individual_metrics(ref=["help us to become a shy person"],
-        #                                       hyp="block our chances for a successful life")
-        # print("help us to become a shy person", scores)
-        #
-        # scores = n.compute_individual_metrics(ref=["bring us great changes"],
-        #                                       hyp="block our chances for a successful life")
-        # print(scores)
-
     def test_compute_metrics_empty(self):
         n = NLGEval()
 
@@ -190,11 +160,3 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.568696, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.784205, scores['GreedyMatchingScore'], places=5)
         self.assertEqual(12, len(scores))
-
-    def test_compute_metricss(self):
-        # The example from the README.
-        root_dir = os.path.join(os.path.dirname(__file__), '..', '..')
-        hypothesis = os.path.join(root_dir, 'examples/6.csv')
-        references = os.path.join(root_dir, 'examples/7.pt_beam_1.csv')
-        scores = nlgeval.compute_metrics(hypothesis, [references])
-        print(scores)
