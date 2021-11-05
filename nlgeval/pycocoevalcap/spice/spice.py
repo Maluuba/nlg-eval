@@ -13,6 +13,16 @@ SPICE_JAR = 'spice-1.0.jar'
 TEMP_DIR = 'tmp'
 CACHE_DIR = 'cache'
 
+
+def enc(s):
+    return s.encode('utf-8')
+
+
+def dec(s):
+    return s.decode('utf-8')
+
+
+
 class Spice:
     """
     Main Class to compute the SPICE metric 
@@ -51,7 +61,7 @@ class Spice:
         if not os.path.exists(temp_dir):
           os.makedirs(temp_dir)
         in_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir)
-        json.dump(input_data, in_file, indent=2)
+        json.dump(enc(input_data), in_file, indent=2)
         in_file.close()
 
         # Start job
@@ -71,7 +81,7 @@ class Spice:
 
         # Read and process results
         with open(out_file.name) as data_file:    
-          results = json.load(data_file)
+          results = json.load(dec(data_file))
         os.remove(in_file.name)
         os.remove(out_file.name)
 
