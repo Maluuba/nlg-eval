@@ -65,7 +65,7 @@ class Spice:
         in_file.close()
 
         # Start job
-        out_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir, mode = "r")
+        out_file = tempfile.NamedTemporaryFile(delete=False, dir=temp_dir)
         out_file.close()
         cache_dir=os.path.join(cwd, CACHE_DIR)
         if not os.path.exists(cache_dir):
