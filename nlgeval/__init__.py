@@ -228,7 +228,7 @@ class NLGEval(object):
         if 'CIDEr' not in self.metrics_to_omit:
             self.scorers.append((Cider(), "CIDEr"))
         if 'SPICE' not in self.metrics_to_omit:
-            self.scorers.append((Cider(), "SPICE"))
+            self.scorers.append((Spice(), "SPICE"))
 
     def load_skipthought_model(self):
         from nlgeval.skipthoughts import skipthoughts
