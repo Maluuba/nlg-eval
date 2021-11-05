@@ -173,8 +173,8 @@ def setup(data_path):
         z.extractall(CODE_PATH)
     temp_path = os.path.join(CODE_PATH,'stanford-corenlp-full-2015-12-09')
     os.makedirs(os.path.join(CODE_PATH,'pycocoevalcap/spice/lib/'), exist_ok=True)
-    shutil.move(os.path.join(temp_path,'stanford-corenlp-3.6.0.jar',os.path.join(CODE_PATH,'pycocoevalcap/spice/lib/') ))
-    shutil.move(os.path.join(temp_path,'stanford-corenlp-3.6.0-models.jar',os.path.join(CODE_PATH,'pycocoevalcap/spice/lib/') )) 
+    shutil.move(os.path.join(temp_path,'stanford-corenlp-3.6.0.jar'), os.path.join(CODE_PATH,'pycocoevalcap/spice/lib/stanford-corenlp-3.6.0.jar'))
+    shutil.move(os.path.join(temp_path,'stanford-corenlp-3.6.0-models.jar'),os.path.join(CODE_PATH,'pycocoevalcap/spice/lib/stanford-corenlp-3.6.0-models.jar')) 
     os.remove(os.path.join(CODE_PATH, 'stanford-corenlp-full-2015-12-09.zip'))
 
     path = os.path.join(CODE_PATH, 'multibleu/multi-bleu.perl')
