@@ -11,3 +11,4 @@ gensim<1
 Theano>=0.8.1
 tqdm>=4.24
 xdg==1.0.7
+keras>=2.7.0
