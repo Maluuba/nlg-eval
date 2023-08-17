@@ -225,7 +225,6 @@ class NLGEval(object):
         if 'CIDEr' not in self.metrics_to_omit:
             self.scorers.append((Cider(), "CIDEr"))
 
-
     def load_skipthought_model(self):
         from nlgeval.skipthoughts import skipthoughts
         import numpy as np
@@ -254,6 +253,7 @@ class NLGEval(object):
         hyp_list = [hyp]
 
         ret_scores = {}
+
         if not self.no_overlap:
             for scorer, method in self.scorers:
                 score, scores = scorer.compute_score(refs, hyps)
@@ -266,8 +266,10 @@ class NLGEval(object):
         if not self.no_skipthoughts:
             vector_hyps = self.skipthought_encoder.encode([h.strip() for h in hyp_list], verbose=False)
             ref_list_T = self.np.array(ref_list).T.tolist()
-            vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-            cosine_similarity = list(map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
+            vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False),
+                              ref_list_T)
+            cosine_similarity = list(
+                map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
             cosine_similarity = self.np.max(cosine_similarity, axis=0).mean()
             ret_scores['SkipThoughtCS'] = cosine_similarity
 
@@ -304,8 +306,10 @@ class NLGEval(object):
         if not self.no_skipthoughts:
             vector_hyps = self.skipthought_encoder.encode([h.strip() for h in hyp_list], verbose=False)
             ref_list_T = self.np.array(ref_list).T.tolist()
-            vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False), ref_list_T)
-            cosine_similarity = list(map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
+            vector_refs = map(lambda refl: self.skipthought_encoder.encode([r.strip() for r in refl], verbose=False),
+                              ref_list_T)
+            cosine_similarity = list(
+                map(lambda refv: self.cosine_similarity(refv, vector_hyps).diagonal(), vector_refs))
             cosine_similarity = self.np.max(cosine_similarity, axis=0).mean()
             ret_scores['SkipThoughtCS'] = cosine_similarity
 
