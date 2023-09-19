@@ -9,14 +9,25 @@ from nlgeval.pycocoevalcap.bleu.bleu import Bleu
 from nlgeval.pycocoevalcap.cider.cider import Cider
 from nlgeval.pycocoevalcap.meteor.meteor import Meteor
 from nlgeval.pycocoevalcap.rouge.rouge import Rouge
-
+from nlgeval.naturalness.naturalness import NaturalnessClassifier
 
 # str/unicode stripping in Python 2 and 3 instead of `str.strip`.
 def _strip(s):
     return s.strip()
 
+def get_sents(paths):
+    sents = []
+    for path in paths:
+        with open(path, 'r') as f:
+            for line in f:
+                sents.append(clean_line(line))
+    return sents
 
-def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=False, no_glove=False):
+def clean_line(line): 
+	line = line.lower().replace(',','').replace('.','').replace('\'', '').replace('!','').replace(')','').replace('(','').replace(';','').replace('-', ' ').replace('/', ' ').replace('%','').replace('?','').replace('"', '')
+	return line
+
+def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=False, no_glove=False, not_naturalness=False, naturalness_model='CAAE'):
     with open(hypothesis, 'r') as f:
         hyp_list = f.readlines()
     ref_list = []
@@ -80,10 +91,17 @@ def compute_metrics(hypothesis, references, no_overlap=False, no_skipthoughts=Fa
             value = float(value.strip())
             ret_scores[name] = value
 
+    if not not_naturalness:
+        neural_classifier = NaturalnessClassifier(naturalness_model)
+        hyp = get_sents(references)
+        scores = neural_classifier.score(hyp).mean()
+        ret_scores['Naturalness'] = scores
+        print("Mean Naturalness of references: {}".format(ret_scores['Naturalness'])) 
+
     return ret_scores
 
 
-def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False, no_glove=False):
+def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False, no_glove=False, not_naturalness=False, naturalness_model='CAAE'):
     assert isinstance(hyp, six.string_types)
 
     if isinstance(ref, six.string_types):
@@ -141,6 +159,11 @@ def compute_individual_metrics(ref, hyp, no_overlap=False, no_skipthoughts=False
             name, value = score.split(':')
             value = float(value.strip())
             ret_scores[name] = value
+    
+    if not not_naturalness:
+        neural_classifier = NaturalnessClassifier(naturalness_model)
+        scores = neural_classifier.score(ref).mean()
+        ret_scores['Naturalness'] = scores
 
     return ret_scores
 
@@ -163,8 +186,7 @@ class NLGEval(object):
                         'SkipThoughtCS',
                     } | glove_metrics
 
-    def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False,
-                 metrics_to_omit=None):
+    def __init__(self, no_overlap=False, no_skipthoughts=False, no_glove=False, no_naturalness=False, naturalness_model='CAAE', metrics_to_omit=None):
         """
         :param no_overlap: Default: Use overlap metrics.
             `True` if these metrics should not be used.
@@ -194,6 +216,9 @@ class NLGEval(object):
             "Invalid metrics to omit: {}".format(self.metrics_to_omit - self.valid_metrics)
 
         self.no_overlap = no_overlap
+        self.no_naturalness = no_naturalness
+        self.naturalness_model = naturalness_model
+
         if not no_overlap:
             self.load_scorers()
 
@@ -282,6 +307,11 @@ class NLGEval(object):
                 name, value = score.split(':')
                 value = float(value.strip())
                 ret_scores[name] = value
+        
+        if not self.no_naturalness:
+            neural_classifier = NaturalnessClassifier(self.naturalness_model)
+            scores = neural_classifier.score(ref).mean()
+            ret_scores['Naturalness'] = scores
 
         return ret_scores
 
@@ -319,5 +349,13 @@ class NLGEval(object):
                 name, value = score.split(':')
                 value = float(value.strip())
                 ret_scores[name] = value
+        
+        if not self.no_naturalness:
+            neural_classifier = NaturalnessClassifier(self.naturalness_model)
+            all_refs = []
+            for ref in ref_list:
+                all_refs.extend(ref)
+            scores = neural_classifier.score(all_refs).mean()
+            ret_scores['Naturalness'] = scores
 
         return ret_scores

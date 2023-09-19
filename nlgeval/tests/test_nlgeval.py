@@ -29,7 +29,8 @@ class TestNlgEval(unittest.TestCase):
         self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.94509, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.960771, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(12, len(scores))
+        self.assertAlmostEqual(0.749818, scores['Naturalness'], places=5)
+        self.assertEqual(13, len(scores))
 
         scores = n.compute_metrics(ref_list=[
             [
@@ -57,9 +58,10 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.88469, scores['EmbeddingAverageCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.568696, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.784205, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(12, len(scores))
+        self.assertAlmostEqual(0.970685, scores['Naturalness'], places=5)
+        self.assertEqual(13, len(scores))
 
-        # Non-ASCII tests.
+        # Non-ASCII tests. Naturalness metric cannot be used in this case as the Classifier is trained only on English datasets
         scores = n.compute_individual_metrics(ref=["Test en français.",
                                                    "Le test en français."],
                                               hyp="Le test est en français.")
@@ -75,7 +77,7 @@ class TestNlgEval(unittest.TestCase):
         self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.815158, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.940959, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(12, len(scores))
+        self.assertEqual(13, len(scores))
 
         scores = n.compute_individual_metrics(ref=["テスト"],
                                               hyp="テスト")
@@ -85,7 +87,7 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.0, scores['CIDEr'], places=3)
         self.assertAlmostEqual(1.0, scores['SkipThoughtCS'], places=3)
         self.assertAlmostEqual(1.0, scores['GreedyMatchingScore'], places=3)
-        self.assertEqual(12, len(scores))
+        self.assertEqual(13, len(scores))
 
     def test_compute_metrics_omit(self):
         n = NLGEval(metrics_to_omit=['Bleu_3', 'METEOR', 'EmbeddingAverageCosineSimilarity'])
@@ -101,7 +103,8 @@ class TestNlgEval(unittest.TestCase):
         self.assertAlmostEqual(0.8375251, scores['SkipThoughtCS'], places=5)
         self.assertAlmostEqual(0.94509, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.960771, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(7, len(scores))
+        self.assertAlmostEqual(0.749818, scores['Naturalness'], places=5)
+        self.assertEqual(8, len(scores))
 
     def test_compute_metrics(self):
         # The example from the README.
@@ -121,4 +124,5 @@ class TestNlgEval(unittest.TestCase):
         self.assertEqual(scores['EmbeddingAverageCosineSimilarity'], scores['EmbeddingAverageCosineSimilairty'])
         self.assertAlmostEqual(0.568696, scores['VectorExtremaCosineSimilarity'], places=5)
         self.assertAlmostEqual(0.784205, scores['GreedyMatchingScore'], places=5)
-        self.assertEqual(12, len(scores))
+        self.assertAlmostEqual(0.970685, scores['Naturalness'], places=5)
+        self.assertEqual(13, len(scores))
