@@ -10,6 +10,7 @@ Rows across these files should correspond to the same example.
 - METEOR
 - ROUGE
 - CIDEr
+- SPICE
 - SkipThought cosine similarity
 - Embedding Average cosine similarity
 - Vector Extrema cosine similarity
@@ -185,6 +186,7 @@ gives
     METEOR: 0.295797
     ROUGE_L: 0.522104
     CIDEr: 1.242192
+    SPICE: 0.312331
     SkipThoughtsCosineSimilarity: 0.626149
     EmbeddingAverageCosineSimilarity: 0.884690
     VectorExtremaCosineSimilarity: 0.568696
