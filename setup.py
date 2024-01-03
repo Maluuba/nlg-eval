@@ -10,21 +10,13 @@ from setuptools import setup
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 
-try:
-    from pip._internal.req import parse_requirements
-except:
-    from pip.req import parse_requirements
-
 
 if __name__ == '__main__':
     requirements_path = 'requirements.txt'
     if sys.version_info[0] < 3:
         requirements_path = 'requirements_py2.txt'
-    install_reqs = parse_requirements(requirements_path, session=False)
-    try:
-        reqs = [str(ir.req) for ir in install_reqs]
-    except:
-        reqs = [str(ir.requirement) for ir in install_reqs]
+    with open(requirements_path) as f:
+        install_reqs = f.read().splitlines()
 
     setup(name='nlg-eval',
           version='2.4.1',
@@ -35,5 +27,5 @@ if __name__ == '__main__':
           packages=find_packages(),
           include_package_data=True,
           scripts=['bin/nlg-eval'],
-          install_requires=reqs,
+          install_requires=install_reqs,
     )
