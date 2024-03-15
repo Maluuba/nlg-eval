@@ -108,7 +108,7 @@ def setup(data_path):
 
     # Skip-thoughts data.
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/dictionary.txt',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/dictionary.txt',
         target_dir=data_path
     ))
     downloads.append(dict(
@@ -116,27 +116,27 @@ def setup(data_path):
             target_dir=CODE_PATH
     ))   
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/utable.npy',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/utable.npy',
         target_dir=data_path
     ))
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/btable.npy',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/btable.npy',
         target_dir=data_path
     ))
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/uni_skip.npz',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/uni_skip.npz',
         target_dir=data_path
     ))
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/uni_skip.npz.pkl',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/uni_skip.npz.pkl',
         target_dir=data_path
     ))
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/bi_skip.npz',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/bi_skip.npz',
         target_dir=data_path
     ))
     downloads.append(dict(
-        url='http://www.cs.toronto.edu/~rkiros/models/bi_skip.npz.pkl',
+        url='http://mirror.nubenum.de/www.cs.toronto.edu/~rkiros/models/bi_skip.npz.pkl',
         target_dir=data_path
     ))
 
